@@ -49,13 +49,29 @@ END_MESSAGE_MAP()
 
 CCentralitaDlg::CCentralitaDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CCentralitaDlg::IDD, pParent)
+  , m_ipMotor(_T(""))
+  , m_ipAcondicionamiento(_T(""))
+  , m_portMotor(0)
+  , m_portAcondicionamiento(0)
+  , m_ipLuces(_T(""))
+  , m_portLuces(0)
+  , m_tiempo(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CCentralitaDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+  CDialogEx::DoDataExchange(pDX);
+  DDX_Text(pDX, txIPMotor, m_ipMotor);
+  //  DDX_Text(pDX, txPortMotor, m_portMotor);
+  DDX_Text(pDX, txIPAcondicionamiento, m_ipAcondicionamiento);
+  DDX_Text(pDX, txPortMotor, m_portMotor);
+  DDX_Text(pDX, txPortAcondicionamiento, m_portAcondicionamiento);
+  DDX_Text(pDX, txIPLuces, m_ipLuces);
+  DDX_Text(pDX, txPortLuces, m_portLuces);
+  DDX_Text(pDX, txTiempo, m_tiempo);
+  DDX_Control(pDX, lsLog, m_log);
 }
 
 BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)

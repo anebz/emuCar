@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // Cuadro de diálogo de CCentralitaDlg
@@ -29,4 +30,14 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+  CString m_ipMotor;
+//  CString m_portMotor;
+  CString m_ipAcondicionamiento;
+  int m_portMotor;
+  int m_portAcondicionamiento;
+  CString m_ipLuces;
+  int m_portLuces;
+  int m_tiempo;
+  CListBox m_log;
 };
