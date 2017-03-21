@@ -113,7 +113,12 @@ BOOL CCentralitaDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Establecer icono pequeño
 
 	// TODO: agregar aquí inicialización adicional
-
+  m_ipMotor = m_ipAcondicionamiento = m_ipLuces = "127.0.0.1";
+  m_portMotor = 502;
+  m_portAcondicionamiento = 503;
+  m_portLuces = 504;
+  m_tiempo = 250;
+  UpdateData(0);
 	return TRUE;  // Devuelve TRUE  a menos que establezca el foco en un control
 }
 
