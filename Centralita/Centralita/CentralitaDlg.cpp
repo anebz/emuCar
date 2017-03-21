@@ -131,6 +131,8 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_izquierdo.SubclassDlgItem(imIzquierda, this);
   m_derecho.SubclassDlgItem(imDerecha, this);
   m_freno.SubclassDlgItem(imFreno, this);
+  m_imTemperatura.SubclassDlgItem(imTemperatura, this);
+  m_imRPM.SubclassDlgItem(imRPM, this);
 	return TRUE;  // Devuelve TRUE  a menos que establezca el foco en un control
 }
 

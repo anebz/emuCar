@@ -5,6 +5,7 @@
 #pragma once
 #include "afxwin.h"
 #include "Led.h"
+#include "Gauge.h"
 
 // Cuadro de diálogo de CCentralitaDlg
 class CCentralitaDlg : public CDialogEx
@@ -42,6 +43,7 @@ public:
   CListBox m_log;
   CLed m_statusMotor, m_statusAcondicionamiento, m_statusLuces;
   CLed m_izquierdo, m_derecho, m_freno;
+  CGauge m_imTemperatura, m_imRPM;
   CString m_temperatura;
   CString m_RPM;
 };

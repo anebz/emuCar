@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="Centralita.h" />
     <ClInclude Include="CentralitaDlg.h" />
+    <ClInclude Include="Gauge.h" />
     <ClInclude Include="Led.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -109,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="Centralita.cpp" />
     <ClCompile Include="CentralitaDlg.cpp" />
+    <ClCompile Include="Gauge.cpp" />
     <ClCompile Include="Led.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
