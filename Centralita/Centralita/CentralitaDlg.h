@@ -4,7 +4,7 @@
 
 #pragma once
 #include "afxwin.h"
-
+#include "Led.h"
 
 // Cuadro de diálogo de CCentralitaDlg
 class CCentralitaDlg : public CDialogEx
@@ -40,4 +40,8 @@ public:
   int m_portLuces;
   int m_tiempo;
   CListBox m_log;
+  CLed m_statusMotor, m_statusAcondicionamiento, m_statusLuces;
+  CLed m_izquierdo, m_derecho, m_freno;
+  CString m_temperatura;
+  CString m_RPM;
 };

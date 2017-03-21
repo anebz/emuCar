@@ -56,6 +56,8 @@ CCentralitaDlg::CCentralitaDlg(CWnd* pParent /*=NULL*/)
   , m_ipLuces(_T(""))
   , m_portLuces(0)
   , m_tiempo(0)
+  , m_temperatura(_T(""))
+  , m_RPM(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -72,6 +74,8 @@ void CCentralitaDlg::DoDataExchange(CDataExchange* pDX)
   DDX_Text(pDX, txPortLuces, m_portLuces);
   DDX_Text(pDX, txTiempo, m_tiempo);
   DDX_Control(pDX, lsLog, m_log);
+  DDX_Text(pDX, txTemperatura, m_temperatura);
+  DDX_Text(pDX, txRPM, m_RPM);
 }
 
 BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
@@ -118,7 +122,15 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_portAcondicionamiento = 503;
   m_portLuces = 504;
   m_tiempo = 250;
+  m_temperatura = "Temperatura";
+  m_RPM = "RPMs";
   UpdateData(0);
+  m_statusMotor.SubclassDlgItem(imStatusMotor, this);
+  m_statusAcondicionamiento.SubclassDlgItem(imStatusAcondicionamiento, this);
+  m_statusLuces.SubclassDlgItem(imStatusLuces, this);
+  m_izquierdo.SubclassDlgItem(imIzquierda, this);
+  m_derecho.SubclassDlgItem(imDerecha, this);
+  m_freno.SubclassDlgItem(imFreno, this);
 	return TRUE;  // Devuelve TRUE  a menos que establezca el foco en un control
 }
 
