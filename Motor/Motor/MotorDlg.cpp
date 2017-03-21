@@ -108,6 +108,8 @@ BOOL CMotorDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	m_port = 502;
+	UpdateData(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

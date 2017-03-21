@@ -2,3 +2,5 @@ Centralita/Centralita/Debug/
 *.sdf
 *.opensdf
 Centralita/ipch/
+*.ipch
+Motor/Motor/Debug/

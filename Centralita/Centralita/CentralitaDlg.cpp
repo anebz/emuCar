@@ -82,6 +82,7 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(bnStart, &CCentralitaDlg::OnBnClickedbnstart)
 END_MESSAGE_MAP()
 
 
@@ -185,3 +186,25 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CCentralitaDlg::OnBnClickedbnstart()
+{
+
+
+	// COPIAR CODIGO DONDE CORRESPONDA, ESTO ES PARA COMUNICACION CON MOTOR
+	/*CSocket misoc;
+	if(!misoc.Create()){ 
+		MessageBox("Error"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 502)){
+		MessageBox("No conecta.."); return;
+	}	
+	misoc.Send("Ane", 20);
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+	// process rec_buf --> temperature
+	len = misoc.Receive(rec_buf,20); 
+	// process rec_buf --> rpm
+	*/
+}

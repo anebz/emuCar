@@ -46,4 +46,5 @@ public:
   CGauge m_imTemperatura, m_imRPM;
   CString m_temperatura;
   CString m_RPM;
+	afx_msg void OnBnClickedbnstart();
 };

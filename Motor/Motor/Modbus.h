@@ -12,7 +12,7 @@ public:
 
 	virtual ~CModbus();
 	virtual void OnAccept(int nErrorCode);
-	unsigned char* CModbus::Protocol(short add, int slider);
+	void Protocol(short add, int slider, unsigned char* Bus);
 };
 
 
