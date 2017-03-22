@@ -6,6 +6,7 @@
 #include "afxwin.h"
 #include "Led.h"
 #include "Gauge.h"
+#include <vector>
 
 // Cuadro de diálogo de CCentralitaDlg
 class CCentralitaDlg : public CDialogEx
@@ -47,4 +48,11 @@ public:
   CString m_temperatura;
   CString m_RPM;
 	afx_msg void OnBnClickedbnstart();
+  afx_msg LRESULT OnFinHilo(WPARAM wParam, LPARAM lParam); 
+  std::vector<CWinThread*> threads;
+  bool m_start_stop;
+  bool m_flag;
+  bool m_life;
+  bool m_fin;
+  LRESULT OnFinHilo(WPARAM wParam, LPARAM lParam);
 };

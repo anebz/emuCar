@@ -10,7 +10,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
+#define WM_FIN_HILO WM_USER+100
 
 // Cuadro de diálogo CAboutDlg utilizado para el comando Acerca de
 
@@ -83,6 +83,7 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(bnStart, &CCentralitaDlg::OnBnClickedbnstart)
+  ON_MESSAGE (WM_FIN_HILO, OnFinHilo)
 END_MESSAGE_MAP()
 
 
@@ -126,6 +127,10 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_temperatura = "Temperatura";
   m_RPM = "RPMs";
   UpdateData(0);
+  m_start_stop = false;
+  m_flag = false;
+  m_fin = false;
+  m_life = true;
   m_statusMotor.SubclassDlgItem(imStatusMotor, this);
   m_statusAcondicionamiento.SubclassDlgItem(imStatusAcondicionamiento, this);
   m_statusLuces.SubclassDlgItem(imStatusLuces, this);
@@ -134,6 +139,13 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_freno.SubclassDlgItem(imFreno, this);
   m_imTemperatura.SubclassDlgItem(imTemperatura, this);
   m_imRPM.SubclassDlgItem(imRPM, this);
+  threads.push_back(AfxBeginThread(Motor,this));
+  threads.push_back(AfxBeginThread(Luces,this));
+  threads.push_back(AfxBeginThread(Acondicionamiento,this));
+  for(size_t ii = 0; ii < threads.size(); ii++){
+    threads.at(ii)->SuspendThread();
+  }
+  
 	return TRUE;  // Devuelve TRUE  a menos que establezca el foco en un control
 }
 
@@ -186,25 +198,91 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+UINT Motor(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+}
+UINT Acondicionamiento(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+}
+
+UINT Luces(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+}
+
+LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam){
+  //Código a implementar dependiendo del perotocolo
+}
 
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
-
-
-	// COPIAR CODIGO DONDE CORRESPONDA, ESTO ES PARA COMUNICACION CON MOTOR
-	/*CSocket misoc;
-	if(!misoc.Create()){ 
-		MessageBox("Error"); return;
-	}
-	if(!misoc.Connect("127.0.0.1", 502)){
-		MessageBox("No conecta.."); return;
-	}	
-	misoc.Send("Ane", 20);
-	unsigned char rec_buf[20];
-	int len = misoc.Receive(rec_buf,20); 
-	// process rec_buf --> temperature
-	len = misoc.Receive(rec_buf,20); 
-	// process rec_buf --> rpm
-	*/
+  if(m_start_stop){
+    for(size_t ii = 0; ii < threads.size(); ii++){
+      threads.at(ii)->SuspendThread();
+    }
+    m_start_stop = false;
+  }
+  else{
+    for(size_t ii = 0; ii < threads.size(); ii++){
+      threads.at(ii)->ResumeThread();
+    }
+    m_start_stop = true;
+  }
 }
