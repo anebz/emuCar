@@ -12,7 +12,7 @@ class CLucesDlg : public CDialogEx
 // Construction
 public:
 	CLucesDlg(CWnd* pParent = NULL);	// standard constructor
-	CLed freno, i1, i2, i3, i4;
+	CLed luces[4];
 	CModbus* pSock;
 
 // Dialog Data

@@ -88,6 +88,78 @@ END_MESSAGE_MAP()
 
 
 // Controladores de mensaje de CCentralitaDlg
+UINT Motor(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return 0;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return 0;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+	return 0;
+}
+UINT Acondicionamiento(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return 0;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return 0;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+	return 0;
+}
+
+UINT Luces(LPVOID lp){
+  auto *pDlg = (CCentralitaDlg*) lp;
+  while(pDlg->m_life){
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! */
+    CSocket misoc;
+	  if(!misoc.Create()){ 
+		  pDlg->MessageBox("Error"); return 0;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 502)){
+		  pDlg->MessageBox("No conecta.."); return 0;
+	  }	
+	  misoc.Send("Ane", 20);
+	  unsigned char rec_buf[20];
+	  int len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> temperature
+	  len = misoc.Receive(rec_buf,20); 
+	  // process rec_buf --> rpm
+    pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(pDlg->m_fin){}
+  }
+	return 0;
+}
+
+
 
 BOOL CCentralitaDlg::OnInitDialog()
 {
@@ -198,81 +270,38 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-UINT Motor(LPVOID lp){
-  auto *pDlg = (CCentralitaDlg*) lp;
-  while(pDlg->m_life){
-    while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> rpm
-    pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
-  }
-}
-UINT Acondicionamiento(LPVOID lp){
-  auto *pDlg = (CCentralitaDlg*) lp;
-  while(pDlg->m_life){
-    while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> rpm
-    pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
-  }
-}
-
-UINT Luces(LPVOID lp){
-  auto *pDlg = (CCentralitaDlg*) lp;
-  while(pDlg->m_life){
-    while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> rpm
-    pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
-  }
-}
 
 LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam){
-  //Código a implementar dependiendo del perotocolo
+  //Código a implementar dependiendo del protocolo
+	return 0;
 }
 
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
+	/* COMUNICACION CON MOTOR, problemas con address: se manda 400 pero el motor recibe -112 wtf?
+	unsigned char buf[20];
+	buf[0] = 0x04;
+	short add = 400;
+	buf[1] = add >> 8;
+	buf[2] = add & 0xFF;
+	buf[3] = 0;
+	buf[4] = 0x02;
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		MessageBox("Error"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 502)){
+		MessageBox("No conecta.."); return;
+	}	
+	misoc.Send(buf, 20);
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+	*/
+
+
+
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){
       threads.at(ii)->SuspendThread();

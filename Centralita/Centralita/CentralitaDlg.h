@@ -54,5 +54,4 @@ public:
   bool m_flag;
   bool m_life;
   bool m_fin;
-  LRESULT OnFinHilo(WPARAM wParam, LPARAM lParam);
 };

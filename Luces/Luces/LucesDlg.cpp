@@ -102,11 +102,11 @@ BOOL CLucesDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	freno.SubclassDlgItem(IDC_P0, this);
-	i1.SubclassDlgItem(IDC_P1, this);
-	i2.SubclassDlgItem(IDC_P2, this);
-	i3.SubclassDlgItem(IDC_P3, this);
-	i4.SubclassDlgItem(IDC_P4, this);
+	luces[0].SubclassDlgItem(IDC_P0, this);
+	luces[1].SubclassDlgItem(IDC_P1, this);
+	luces[2].SubclassDlgItem(IDC_P2, this);
+	luces[3].SubclassDlgItem(IDC_P3, this);
+	luces[4].SubclassDlgItem(IDC_P4, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

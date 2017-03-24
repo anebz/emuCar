@@ -67,10 +67,45 @@ void CModbus::OnAccept(int nErrorCode)
 	}	
 
 	unsigned char rec_buf[20];
-	int len = misoc.Receive(rec_buf,20); 
 
-	// interpretar protocolo
+	while(1){
+		int len = misoc.Receive(rec_buf,20); 
+		if (len == 0 || len == -1) break;
+		
 
+		// interpretar protocolo
 
+		short length = rec_buf[4]*256 + rec_buf[5];
+
+		if(length != 6){
+			//pDlg->MessageBox("Faltan datos"); return;		
+		}
+
+		if(rec_buf[6] != 23){
+			//pDlg->MessageBox("ID incorrecto"); return;		
+		}
+
+		if(rec_buf[7] != 0x06){ // si no es write
+			//pDlg->MessageBox("La funcion tiene que ser write"); return;		
+		}
+
+		short add = rec_buf[8]*256 + rec_buf[9];
+
+		if(add < 500 || add > 504){
+			//Direccion de la dirección de Modbus incorrecto;	
+		}
+
+		short value = rec_buf[10]*256 + rec_buf[11];
+
+		if (value != 0 || value != 1){
+			// Direccion de la dirección de Modbus incorrecto
+		}
+		
+		pDlg->luces[add - 500]
+
+		// cliente.Send(buf,20); // reenviar solamente si es write
+
+	}
+	
 	CSocket::OnAccept(nErrorCode);
 }
