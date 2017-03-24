@@ -279,7 +279,7 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam){
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
-	/* COMUNICACION CON MOTOR, problemas con address: se manda 400 pero el motor recibe -112 wtf?
+	/*COMUNICACION CON MOTOR
 	unsigned char buf[20];
 	buf[0] = 0x04;
 	short add = 400;
@@ -298,9 +298,13 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	misoc.Send(buf, 20);
 	unsigned char rec_buf[20];
 	int len = misoc.Receive(rec_buf,20); 
+
+	if(rec_buf[0] == 0x04 && rec_buf[1] == 0x04){
+		int temp = rec_buf[2]*256 + rec_buf[3]; 
+		int rpm = rec_buf[4]*256 + rec_buf[5];
+	}else m_log.AddString("Error en comunicación con el motor");
 	*/
-
-
+	
 
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){

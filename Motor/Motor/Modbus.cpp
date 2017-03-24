@@ -23,7 +23,7 @@ CModbus::~CModbus()
 void CModbus::OnAccept(int nErrorCode)
 {
 	unsigned char Bus[20];
-	char buf[50];
+	unsigned char buf[20];
 
 	pDlg->UpdateData(1);
 	CSocket cliente; 
@@ -52,10 +52,10 @@ void CModbus::OnAccept(int nErrorCode)
 		}else if(num == 2 && add == 400){
 			Bus[0] = 0x04; // function mode
 			Bus[1] = (num*2) & 0xFF; // byte count
-			Bus[2] = pDlg->m_sl_temp*30 % 0xFF; // input registers
-			Bus[3] = pDlg->m_sl_temp*30 >> 8 ;// input registers
-			Bus[4] = pDlg->m_sl_rpm*700 % 0xFF; // input registers
-			Bus[5] = pDlg->m_sl_rpm*700 >> 8; // input registers
+			Bus[2] = pDlg->m_sl_temp*30 >> 8; // input registers
+			Bus[3] = pDlg->m_sl_temp*30 & 0xFF ;// input registers
+			Bus[4] = pDlg->m_sl_rpm*700 >> 8; // input registers
+			Bus[5] = pDlg->m_sl_rpm*700 & 0xFF; // input registers
 		}else error = 1;
 	}else error = 1;
 
