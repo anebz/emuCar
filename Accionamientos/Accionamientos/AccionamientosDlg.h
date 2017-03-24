@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "Modbus.h"
 
 // CAccionamientosDlg dialog
 class CAccionamientosDlg : public CDialogEx
@@ -11,6 +11,7 @@ class CAccionamientosDlg : public CDialogEx
 // Construction
 public:
 	CAccionamientosDlg(CWnd* pParent = NULL);	// standard constructor
+	CModbus* pSock;
 
 // Dialog Data
 	enum { IDD = IDD_ACCIONAMIENTOS_DIALOG };
@@ -31,4 +32,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	int m_port;
+	afx_msg void OnBnClickedStart();
+	BOOL m_button[3];
 };

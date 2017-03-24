@@ -302,8 +302,37 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	if(rec_buf[0] == 0x04 && rec_buf[1] == 0x04){
 		int temp = rec_buf[2]*256 + rec_buf[3]; 
 		int rpm = rec_buf[4]*256 + rec_buf[5];
-	}else m_log.AddString("Error en comunicación con el motor");
+	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
 	*/
+
+
+
+	/*COMUNICACION CON ACCIONAMIENTOS
+	unsigned char buf[20];
+	buf[0] = 0x04;
+	short add = 400;
+	buf[1] = add >> 8;
+	buf[2] = add & 0xFF;
+	buf[3] = 0;
+	buf[4] = 0x03;
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		MessageBox("Error"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 503)){
+		MessageBox("No conecta.."); return;
+	}	
+	misoc.Send(buf, 20);
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+
+	if(rec_buf[0] == 0x04 && rec_buf[1] == 0x06){
+		bool freno = rec_buf[3];
+		bool izq = rec_buf[5];
+		bool der = rec_buf[7];
+	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");*/
+	
 	
 
   if(m_start_stop){

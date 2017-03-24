@@ -58,12 +58,16 @@ void CAccionamientosDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_PORT, m_port);
+	DDX_Check(pDX, IDC_B1, m_button[0]);
+	DDX_Check(pDX, IDC_B2, m_button[1]);
+	DDX_Check(pDX, IDC_B3, m_button[2]);
 }
 
 BEGIN_MESSAGE_MAP(CAccionamientosDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_START, &CAccionamientosDlg::OnBnClickedStart)
 END_MESSAGE_MAP()
 
 
@@ -99,6 +103,8 @@ BOOL CAccionamientosDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	m_port = 503;
+	UpdateData(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -152,3 +158,10 @@ HCURSOR CAccionamientosDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CAccionamientosDlg::OnBnClickedStart()
+{
+	UpdateData(1);
+	pSock = new CModbus(this);
+	pSock->Create(m_port, SOCK_STREAM);
+	pSock->Listen();
+}

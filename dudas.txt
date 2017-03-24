@@ -1,0 +1,11 @@
+DUDAS
+
+rojo: 255 7 0
+ambar: 255 118 0
+gris: 160 160 160
+verde: 0 201 13
+
+
+id motor:21
+id acc: 22
+id luces: 23
