@@ -315,6 +315,7 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
 		int temp = rec_buf[9]*256 + rec_buf[10]; 
 		int rpm = rec_buf[11]*256 + rec_buf[12];
+		m_log.AddString("Motor OK");
 	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
 	n_msg++;*/
 	
@@ -354,12 +355,14 @@ void CCentralitaDlg::OnBnClickedbnstart()
 		bool freno = rec_buf[10];
 		bool izq = rec_buf[12];
 		bool der = rec_buf[14];
+		m_log.AddString("Accionamientos OK");
 	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 	n_msg++;*/
 	
 
 	/*COMUNICACION CON LUCES
 	unsigned char buf[20];
+	unsigned char rec_buf[20];
 
 	buf[0] = n_msg >> 8;
 	buf[1] = n_msg & 0xFF; // transaction identifier
@@ -379,51 +382,51 @@ void CCentralitaDlg::OnBnClickedbnstart()
 		m_log.AddString("No conecta con puerto 504"); return;
 	}
 
+	int ok = 0;
+
 	// addresses and values for each light
-	// freno
-	buf[8] = 500 >> 8;
-	buf[9] = 500 & 0xFF; // data address
+	buf[8] = 0x01;
 	buf[10] = 0;
+	// freno
+	buf[9] = 500 & 0xFF; // data address
 	buf[11] = 0x01; // example, on
 	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
 	// intermitente izq delantero
-	buf[8] = 501 >> 8;
 	buf[9] = 501 & 0xFF; // data address
-	buf[10] = 0;
 	buf[11] = 0x01; // example, on
 	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
 	// intermitente der delantero
-	buf[8] = 502 >> 8;
 	buf[9] = 502 & 0xFF; // data address
-	buf[10] = 0;
 	buf[11] = 0x00; // example, off
 	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
 	// intermitente izq trasero
-	buf[8] = 503 >> 8;
 	buf[9] = 503 & 0xFF; // data address
-	buf[10] = 0;
 	buf[11] = 0x00; // example, off
 	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
 	// intermitente der trasero
-	buf[8] = 504 >> 8;
 	buf[9] = 504 & 0xFF; // data address
-	buf[10] = 0;
 	buf[11] = 0x01; // example, on
 	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
-
-	unsigned char rec_buf[20];
-	int len = misoc.Receive(rec_buf,20); 
-
-	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
-		int temp = rec_buf[9]*256 + rec_buf[10]; 
-		int rpm = rec_buf[11]*256 + rec_buf[9];
-	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
+	if(ok == 5) m_log.AddString("Luces OK");
+	else m_log.AddString("Error en comunicación con las luces");
 	n_msg++;*/
+
+
 
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){

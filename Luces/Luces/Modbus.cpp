@@ -101,7 +101,7 @@ void CModbus::OnAccept(int nErrorCode)
 			// Direccion de la dirección de Modbus incorrecto
 		}
 		
-		pDlg->luces[add - 500]
+		pDlg->luces[add - 500];
 
 		// cliente.Send(buf,20); // reenviar solamente si es write
 

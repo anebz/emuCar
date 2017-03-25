@@ -5,3 +5,5 @@ Centralita/ipch/
 *.ipch
 Motor/Motor/Debug/
 Accionamientos/Accionamientos/Debug/
+Luces/Luces/Debug/
+Luces/Luces/Release/
