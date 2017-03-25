@@ -32,33 +32,37 @@ void CModbus::OnAccept(int nErrorCode)
 	bool error = 0;
 	int len = cliente.Receive(buf,20); 
 
-	if(buf[4] == 0x04){ // read more
+	if(buf[6] != 0x21) error = 1;
+	else if(buf[7] == 0x04){ // read more
 			
-		int add = buf[5]*256 + buf[6];
-		int num = buf[7]*256 + buf[8];
+		int add = buf[8]*256 + buf[9];
+		int num = buf[10]*256 + buf[11];
 
 		Bus[0] = buf[0];
 		Bus[1] = buf[1];
 		Bus[2] = buf[2];
 		Bus[3] = buf[3];
+		Bus[4] = buf[4];
+		Bus[5] = buf[5];
+		Bus[6] = buf[6];
 
-		Bus[4] = 0x04; // function mode
-		Bus[5] = (num*2) & 0xFF; // byte count
+		Bus[7] = 0x04; // function mode
+		Bus[8] = (num*2) & 0xFF; // byte count
 
 		if(num == 1){
 			if(add == 400){
-				Bus[6] = pDlg->m_sl_temp*30 % 0xFF; // input registers
-				Bus[7] = pDlg->m_sl_temp*30 >> 8 ;// input registers
+				Bus[9] = pDlg->m_sl_temp*30 % 0xFF; // input registers
+				Bus[10] = pDlg->m_sl_temp*30 >> 8 ;// input registers
 			}else if(add == 401){
-				Bus[6] = pDlg->m_sl_rpm*700 % 0xFF; // input registers
-				Bus[7] = pDlg->m_sl_rpm*700 >> 8; // input registers
+				Bus[9] = pDlg->m_sl_rpm*700 % 0xFF; // input registers
+				Bus[10] = pDlg->m_sl_rpm*700 >> 8; // input registers
 			}else error = 1;
 
 		}else if(num == 2 && add == 400){
-			Bus[6] = pDlg->m_sl_temp*30 >> 8; // input registers
-			Bus[7] = pDlg->m_sl_temp*30 & 0xFF ;// input registers
-			Bus[8] = pDlg->m_sl_rpm*700 >> 8; // input registers
-			Bus[9] = pDlg->m_sl_rpm*700 & 0xFF; // input registers
+			Bus[9] = pDlg->m_sl_temp*30 >> 8; // input registers
+			Bus[10] = pDlg->m_sl_temp*30 & 0xFF ;// input registers
+			Bus[11] = pDlg->m_sl_rpm*700 >> 8; // input registers
+			Bus[12] = pDlg->m_sl_rpm*700 & 0xFF; // input registers
 		}else error = 1;
 	}else error = 1;
 

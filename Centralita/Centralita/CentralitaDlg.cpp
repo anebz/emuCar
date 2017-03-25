@@ -290,13 +290,16 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	buf[1] = n_msg & 0xFF; // transaction identifier
 	buf[2] = 0x00;
 	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x21; // ID motor
 
-	buf[4] = 0x04; // function code, read
+	buf[7] = 0x04; // function code, read
 	short add = 400; 
-	buf[5] = add >> 8;
-	buf[6] = add & 0xFF; // data address
-	buf[7] = 0;
-	buf[8] = 0x02;
+	buf[8] = add >> 8;
+	buf[9] = add & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x02;
 
 	CSocket misoc;
 	if(!misoc.Create()){ 
@@ -309,9 +312,9 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	unsigned char rec_buf[20];
 	int len = misoc.Receive(rec_buf,20); 
 
-	if(rec_buf[4] == 0x04 && rec_buf[5] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
-		int temp = rec_buf[6]*256 + rec_buf[7]; 
-		int rpm = rec_buf[8]*256 + rec_buf[9];
+	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
+		int temp = rec_buf[9]*256 + rec_buf[10]; 
+		int rpm = rec_buf[11]*256 + rec_buf[12];
 	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
 	n_msg++;*/
 	
@@ -325,13 +328,16 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	buf[1] = n_msg & 0xFF; // transaction identifier
 	buf[2] = 0x00;
 	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x22; // ID accionamientos
 
-	buf[4] = 0x04; // function code, read
+	buf[7] = 0x04; // function code, read
 	short add = 400; 
-	buf[5] = add >> 8;
-	buf[6] = add & 0xFF; // data address
-	buf[7] = 0;
-	buf[8] = 0x03;
+	buf[8] = add >> 8;
+	buf[9] = add & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x03;
 
 	CSocket misoc;
 	if(!misoc.Create()){ 
@@ -344,13 +350,80 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	unsigned char rec_buf[20];
 	int len = misoc.Receive(rec_buf,20); 
 
-	if(rec_buf[4] == 0x04 && rec_buf[5] == 0x06){
-		bool freno = rec_buf[7];
-		bool izq = rec_buf[9];
-		bool der = rec_buf[11];
+	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
+		bool freno = rec_buf[10];
+		bool izq = rec_buf[12];
+		bool der = rec_buf[14];
 	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 	n_msg++;*/
 	
+
+	/*COMUNICACION CON LUCES
+	unsigned char buf[20];
+
+	buf[0] = n_msg >> 8;
+	buf[1] = n_msg & 0xFF; // transaction identifier
+	buf[2] = 0x00;
+	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x23; // ID luces
+
+	buf[7] = 0x06; // function code, write
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		m_log.AddString("Error al crear socket"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 504)){
+		m_log.AddString("No conecta con puerto 504"); return;
+	}
+
+	// addresses and values for each light
+	// freno
+	buf[8] = 500 >> 8;
+	buf[9] = 500 & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+
+	// intermitente izq delantero
+	buf[8] = 501 >> 8;
+	buf[9] = 501 & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+
+	// intermitente der delantero
+	buf[8] = 502 >> 8;
+	buf[9] = 502 & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x00; // example, off
+	misoc.Send(buf, 20);
+
+	// intermitente izq trasero
+	buf[8] = 503 >> 8;
+	buf[9] = 503 & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x00; // example, off
+	misoc.Send(buf, 20);
+
+	// intermitente der trasero
+	buf[8] = 504 >> 8;
+	buf[9] = 504 & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+
+
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+
+	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
+		int temp = rec_buf[9]*256 + rec_buf[10]; 
+		int rpm = rec_buf[11]*256 + rec_buf[9];
+	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
+	n_msg++;*/
 
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){
