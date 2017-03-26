@@ -273,8 +273,9 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> temperature
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
+    while(!pDlg->m_fin){}
   }
+	
 	return 0;
 }
 
@@ -318,17 +319,22 @@ UINT Acondicionamiento(LPVOID lp){
 		}else pDlg->m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
+    while(!pDlg->m_fin){}
   }
 	return 0;
 }
 
 UINT Luces(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
-  while(pDlg->m_life){
+	while(pDlg->m_life){
+		pDlg->m_fin = false;
+		while(!pDlg->m_flag){}
+		 pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+		while(!pDlg->m_fin){}
+  /*while(pDlg->m_life){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
+    /* ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
 		unsigned char rec_buf[20];
 		buf[0] = pDlg->m_numMsg >> 8;
@@ -392,8 +398,10 @@ UINT Luces(LPVOID lp){
 		else pDlg->m_log.AddString("Error en comunicación con las luces");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(pDlg->m_fin){}
-  }
+    while(!pDlg->m_fin){}
+  }*/
+	
+	}
 	return 0;
 }
 
@@ -401,7 +409,7 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 {
   static int contador = 0;
 	contador++;
-	if(contador == 3){
+	if(contador >= 3){
 		m_flag = false;
 		m_fin = true;
 		return 0;
