@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(bnStart, &CCentralitaDlg::OnBnClickedbnstart)
   ON_MESSAGE (WM_FIN_HILO, OnFinHilo)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -91,6 +92,7 @@ END_MESSAGE_MAP()
 UINT Motor(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
+		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
     CSocket misoc;
@@ -115,6 +117,7 @@ UINT Motor(LPVOID lp){
 UINT Acondicionamiento(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
+		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
     CSocket misoc;
@@ -139,6 +142,7 @@ UINT Acondicionamiento(LPVOID lp){
 UINT Luces(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
+		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
     CSocket misoc;
@@ -160,6 +164,17 @@ UINT Luces(LPVOID lp){
 	return 0;
 }
 
+LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
+{
+  static int contador = 0;
+	contador++;
+	if(contador == 3){
+		m_flag = false;
+		m_fin = true;
+		return 0;
+	}
+	return 0;
+}
 
 
 BOOL CCentralitaDlg::OnInitDialog()
@@ -274,16 +289,7 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam){
-  //Código a implementar dependiendo del protocolo
-	return 0;
-}
-
-
-void CCentralitaDlg::OnBnClickedbnstart()
-{
-	/*COMUNICACION CON MOTOR
+/*COMUNICACION CON MOTOR
 	unsigned char buf[20];
 
 	buf[0] = n_msg >> 8;
@@ -428,16 +434,27 @@ void CCentralitaDlg::OnBnClickedbnstart()
 
 
 
+
+void CCentralitaDlg::OnBnClickedbnstart()
+{
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){
       threads.at(ii)->SuspendThread();
     }
     m_start_stop = false;
+		KillTimer(1);
   }
   else{
     for(size_t ii = 0; ii < threads.size(); ii++){
       threads.at(ii)->ResumeThread();
     }
     m_start_stop = true;
+		SetTimer(1, m_tiempo, NULL);
   }
 }
+
+
+	void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
+	{
+		m_flag = true;
+	}
