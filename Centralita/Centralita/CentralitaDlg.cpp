@@ -87,6 +87,148 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
+/*COMUNICACION CON MOTOR
+	unsigned char buf[20];
+
+	buf[0] = m_numMsg >> 8;
+	buf[1] = m_numMsg & 0xFF; // transaction identifier
+	buf[2] = 0x00;
+	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x21; // ID motor
+
+	buf[7] = 0x04; // function code, read
+	short add = 400; 
+	buf[8] = add >> 8;
+	buf[9] = add & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x02;
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		m_log.AddString("Error al crear socket"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 502)){
+		m_log.AddString("No conecta con puerto 502"); return;
+	}	
+	misoc.Send(buf, 20);
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+
+	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == m_numMsg){
+		int temp = rec_buf[9]*256 + rec_buf[10]; 
+		int rpm = rec_buf[11]*256 + rec_buf[12];
+		m_log.AddString("Motor OK");
+	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
+	m_numMsg++;*/
+	
+
+
+
+	/*COMUNICACION CON ACCIONAMIENTOS
+	unsigned char buf[20];
+
+	buf[0] = m_numMsg >> 8;
+	buf[1] = m_numMsg & 0xFF; // transaction identifier
+	buf[2] = 0x00;
+	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x22; // ID accionamientos
+
+	buf[7] = 0x04; // function code, read
+	short add = 400; 
+	buf[8] = add >> 8;
+	buf[9] = add & 0xFF; // data address
+	buf[10] = 0;
+	buf[11] = 0x03;
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		m_log.AddString("Error al crear socket"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 503)){
+		m_log.AddString("No conecta con puerto 503"); return;
+	}	
+	misoc.Send(buf, 20);
+	unsigned char rec_buf[20];
+	int len = misoc.Receive(rec_buf,20); 
+
+	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
+		bool freno = rec_buf[10];
+		bool izq = rec_buf[12];
+		bool der = rec_buf[14];
+		m_log.AddString("Accionamientos OK");
+	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
+	m_numMsg++;*/
+	
+
+	/*COMUNICACION CON LUCES
+	unsigned char buf[20];
+	unsigned char rec_buf[20];
+
+	buf[0] = m_numMsg >> 8;
+	buf[1] = m_numMsg & 0xFF; // transaction identifier
+	buf[2] = 0x00;
+	buf[3] = 0x00; // protocol identifier, 0 in Modbus
+	buf[4] = 0x00;
+	buf[5] = 0x06; // length
+	buf[6] = 0x23; // ID luces
+
+	buf[7] = 0x06; // function code, write
+
+	CSocket misoc;
+	if(!misoc.Create()){ 
+		m_log.AddString("Error al crear socket"); return;
+	}
+	if(!misoc.Connect("127.0.0.1", 504)){
+		m_log.AddString("No conecta con puerto 504"); return;
+	}
+
+	int ok = 0;
+
+	// addresses and values for each light
+	buf[8] = 0x01;
+	buf[10] = 0;
+	// freno
+	buf[9] = 500 & 0xFF; // data address
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+	// intermitente izq delantero
+	buf[9] = 501 & 0xFF; // data address
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+	// intermitente der delantero
+	buf[9] = 502 & 0xFF; // data address
+	buf[11] = 0x00; // example, off
+	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+	// intermitente izq trasero
+	buf[9] = 503 & 0xFF; // data address
+	buf[11] = 0x00; // example, off
+	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+	// intermitente der trasero
+	buf[9] = 504 & 0xFF; // data address
+	buf[11] = 0x01; // example, on
+	misoc.Send(buf, 20);
+	misoc.Receive(rec_buf,20); 
+	if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+	if(ok == 5) m_log.AddString("Luces OK");
+	else m_log.AddString("Error en comunicación con las luces");
+	m_numMsg++;*/
 
 // Controladores de mensaje de CCentralitaDlg
 UINT Motor(LPVOID lp){
@@ -95,18 +237,40 @@ UINT Motor(LPVOID lp){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return 0;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return 0;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
+		unsigned char buf[20];
+		buf[0] = pDlg->m_numMsg >> 8;
+		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x21; // ID motor
+		buf[7] = 0x04; // function code, read
+		short add = 400; 
+		buf[8] = add >> 8;
+		buf[9] = add & 0xFF; // data address
+		buf[10] = 0;
+		buf[11] = 0x02;
+		CSocket misoc;
+		if(!misoc.Create()){ 
+			pDlg->m_log.AddString("Error al crear socket");
+			return 0;
+		}
+		if(!misoc.Connect("127.0.0.1", 502)){
+			pDlg->m_log.AddString("No conecta con puerto 502"); 
+			return 0;
+		}	
+		misoc.Send(buf, 20);
+		unsigned char rec_buf[20];
+		int len = misoc.Receive(rec_buf,20); 
+
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == pDlg->m_numMsg){
+			int temp = rec_buf[9]*256 + rec_buf[10]; 
+			int rpm = rec_buf[11]*256 + rec_buf[12];
+			pDlg->m_log.AddString("Motor OK");
+		}else pDlg->m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
+		pDlg->m_numMsg++;
 	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
     while(pDlg->m_fin){}
@@ -120,19 +284,39 @@ UINT Acondicionamiento(LPVOID lp){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return 0;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return 0;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> rpm
+		unsigned char buf[20];
+		buf[0] = pDlg->m_numMsg >> 8;
+		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x22; // ID accionamientos
+		buf[7] = 0x04; // function code, read
+		short add = 400; 
+		buf[8] = add >> 8;
+		buf[9] = add & 0xFF; // data address
+		buf[10] = 0;
+		buf[11] = 0x03;
+		CSocket misoc;
+		if(!misoc.Create()){ 
+			pDlg->m_log.AddString("Error al crear socket"); 
+			return 0;
+		}
+		if(!misoc.Connect("127.0.0.1", 503)){
+			pDlg->m_log.AddString("No conecta con puerto 503"); 
+			return 0;
+		}	
+		misoc.Send(buf, 20);
+		unsigned char rec_buf[20];
+		int len = misoc.Receive(rec_buf,20); 
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
+			bool freno = rec_buf[10];
+			bool izq = rec_buf[12];
+			bool der = rec_buf[14];
+			pDlg->m_log.AddString("Accionamientos OK");
+		}else pDlg->m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
+		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
     while(pDlg->m_fin){}
   }
@@ -145,19 +329,68 @@ UINT Luces(LPVOID lp){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
-    CSocket misoc;
-	  if(!misoc.Create()){ 
-		  pDlg->MessageBox("Error"); return 0;
-	  }
-	  if(!misoc.Connect("127.0.0.1", 502)){
-		  pDlg->MessageBox("No conecta.."); return 0;
-	  }	
-	  misoc.Send("Ane", 20);
-	  unsigned char rec_buf[20];
-	  int len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> temperature
-	  len = misoc.Receive(rec_buf,20); 
-	  // process rec_buf --> rpm
+		unsigned char buf[20];
+		unsigned char rec_buf[20];
+		buf[0] = pDlg->m_numMsg >> 8;
+		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x23; // ID luces
+		buf[7] = 0x06; // function code, write
+		CSocket misoc;
+		if(!misoc.Create()){ 
+			pDlg->m_log.AddString("Error al crear socket"); 
+			return 0;
+		}
+		if(!misoc.Connect("127.0.0.1", 504)){
+			pDlg->m_log.AddString("No conecta con puerto 504"); 
+			return 0;
+		}
+		int ok = 0;
+		// addresses and values for each light
+		buf[8] = 0x01;
+		buf[10] = 0;
+
+		// freno
+		buf[9] = 500 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq delantero
+		buf[9] = 501 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der delantero
+		buf[9] = 502 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq trasero
+		buf[9] = 503 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der trasero
+		buf[9] = 504 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		if(ok == 5) pDlg->m_log.AddString("Luces OK");
+		else pDlg->m_log.AddString("Error en comunicación con las luces");
+		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
     while(pDlg->m_fin){}
   }
@@ -219,7 +452,7 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_flag = false;
   m_fin = false;
   m_life = true;
-	n_msg = 1;
+	m_numMsg = 1;
 
   m_statusMotor.SubclassDlgItem(imStatusMotor, this);
   m_statusAcondicionamiento.SubclassDlgItem(imStatusAcondicionamiento, this);
@@ -288,152 +521,6 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-/*COMUNICACION CON MOTOR
-	unsigned char buf[20];
-
-	buf[0] = n_msg >> 8;
-	buf[1] = n_msg & 0xFF; // transaction identifier
-	buf[2] = 0x00;
-	buf[3] = 0x00; // protocol identifier, 0 in Modbus
-	buf[4] = 0x00;
-	buf[5] = 0x06; // length
-	buf[6] = 0x21; // ID motor
-
-	buf[7] = 0x04; // function code, read
-	short add = 400; 
-	buf[8] = add >> 8;
-	buf[9] = add & 0xFF; // data address
-	buf[10] = 0;
-	buf[11] = 0x02;
-
-	CSocket misoc;
-	if(!misoc.Create()){ 
-		m_log.AddString("Error al crear socket"); return;
-	}
-	if(!misoc.Connect("127.0.0.1", 502)){
-		m_log.AddString("No conecta con puerto 502"); return;
-	}	
-	misoc.Send(buf, 20);
-	unsigned char rec_buf[20];
-	int len = misoc.Receive(rec_buf,20); 
-
-	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == n_msg){
-		int temp = rec_buf[9]*256 + rec_buf[10]; 
-		int rpm = rec_buf[11]*256 + rec_buf[12];
-		m_log.AddString("Motor OK");
-	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
-	n_msg++;*/
-	
-
-
-
-	/*COMUNICACION CON ACCIONAMIENTOS
-	unsigned char buf[20];
-
-	buf[0] = n_msg >> 8;
-	buf[1] = n_msg & 0xFF; // transaction identifier
-	buf[2] = 0x00;
-	buf[3] = 0x00; // protocol identifier, 0 in Modbus
-	buf[4] = 0x00;
-	buf[5] = 0x06; // length
-	buf[6] = 0x22; // ID accionamientos
-
-	buf[7] = 0x04; // function code, read
-	short add = 400; 
-	buf[8] = add >> 8;
-	buf[9] = add & 0xFF; // data address
-	buf[10] = 0;
-	buf[11] = 0x03;
-
-	CSocket misoc;
-	if(!misoc.Create()){ 
-		m_log.AddString("Error al crear socket"); return;
-	}
-	if(!misoc.Connect("127.0.0.1", 503)){
-		m_log.AddString("No conecta con puerto 503"); return;
-	}	
-	misoc.Send(buf, 20);
-	unsigned char rec_buf[20];
-	int len = misoc.Receive(rec_buf,20); 
-
-	if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
-		bool freno = rec_buf[10];
-		bool izq = rec_buf[12];
-		bool der = rec_buf[14];
-		m_log.AddString("Accionamientos OK");
-	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
-	n_msg++;*/
-	
-
-	/*COMUNICACION CON LUCES
-	unsigned char buf[20];
-	unsigned char rec_buf[20];
-
-	buf[0] = n_msg >> 8;
-	buf[1] = n_msg & 0xFF; // transaction identifier
-	buf[2] = 0x00;
-	buf[3] = 0x00; // protocol identifier, 0 in Modbus
-	buf[4] = 0x00;
-	buf[5] = 0x06; // length
-	buf[6] = 0x23; // ID luces
-
-	buf[7] = 0x06; // function code, write
-
-	CSocket misoc;
-	if(!misoc.Create()){ 
-		m_log.AddString("Error al crear socket"); return;
-	}
-	if(!misoc.Connect("127.0.0.1", 504)){
-		m_log.AddString("No conecta con puerto 504"); return;
-	}
-
-	int ok = 0;
-
-	// addresses and values for each light
-	buf[8] = 0x01;
-	buf[10] = 0;
-	// freno
-	buf[9] = 500 & 0xFF; // data address
-	buf[11] = 0x01; // example, on
-	misoc.Send(buf, 20);
-	misoc.Receive(rec_buf,20); 
-	if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-	// intermitente izq delantero
-	buf[9] = 501 & 0xFF; // data address
-	buf[11] = 0x01; // example, on
-	misoc.Send(buf, 20);
-	misoc.Receive(rec_buf,20); 
-	if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-	// intermitente der delantero
-	buf[9] = 502 & 0xFF; // data address
-	buf[11] = 0x00; // example, off
-	misoc.Send(buf, 20);
-	misoc.Receive(rec_buf,20); 
-	if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-	// intermitente izq trasero
-	buf[9] = 503 & 0xFF; // data address
-	buf[11] = 0x00; // example, off
-	misoc.Send(buf, 20);
-	misoc.Receive(rec_buf,20); 
-	if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-	// intermitente der trasero
-	buf[9] = 504 & 0xFF; // data address
-	buf[11] = 0x01; // example, on
-	misoc.Send(buf, 20);
-	misoc.Receive(rec_buf,20); 
-	if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-	if(ok == 5) m_log.AddString("Luces OK");
-	else m_log.AddString("Error en comunicación con las luces");
-	n_msg++;*/
-
-
-
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {

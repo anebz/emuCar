@@ -14,7 +14,7 @@ class CCentralitaDlg : public CDialogEx
 // Construcción
 public:
 	CCentralitaDlg(CWnd* pParent = NULL);	// Constructor estándar
-	int n_msg;
+	int m_numMsg;
 
 // Datos del cuadro de diálogo
 	enum { IDD = IDD_CENTRALITA_DIALOG };
@@ -55,4 +55,5 @@ public:
   bool m_flag;
   bool m_life;
   bool m_fin;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
