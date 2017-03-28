@@ -345,7 +345,6 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 UINT Motor(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
-		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
     unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
@@ -371,7 +370,6 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> temperature
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(!pDlg->m_fin){}
   }
 	
 	return 0;
@@ -380,7 +378,6 @@ UINT Motor(LPVOID lp){
 UINT Acondicionamiento(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
-		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
 		unsigned char buf[20];
@@ -417,7 +414,6 @@ UINT Acondicionamiento(LPVOID lp){
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-    while(!pDlg->m_fin){}
   }
 	return 0;
 }
@@ -505,14 +501,8 @@ UINT Luces(LPVOID lp){
 
 LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 {
-  static int contador = 0;
-	contador++;
-	if(contador >= 3){
-		m_flag = false;
-		m_fin = true;
-		return 0;
-	}
-	return 0;
+	m_flag = false;
+  return 0;
 }
 
 void CCentralitaDlg::OnBnClickedbnstart()
