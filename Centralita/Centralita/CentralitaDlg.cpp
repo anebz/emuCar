@@ -343,11 +343,12 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 
 // Controladores de mensaje de CCentralitaDlg
 UINT Motor(LPVOID lp){
+	/*
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
+    // ALGORITMO DE CONEXIÓN!!! 
     //unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
 		unsigned char buf[20];
 
@@ -388,17 +389,19 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
 		misoc.Close();
-  }
-	
+  }*/
+	while(1);
 	return 0;
 }
 
 UINT Acondicionamiento(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
+	CSocket misoc;
   while(pDlg->m_life){
+		pDlg->writeOnLog("Holaddd");
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
-    /* ALGORITMO DE CONEXIÓN!!! */
+    // ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
 		buf[0] = pDlg->m_numMsg >> 8;
 		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
@@ -413,15 +416,17 @@ UINT Acondicionamiento(LPVOID lp){
 		buf[9] = add & 0xFF; // data address
 		buf[10] = 0;
 		buf[11] = 0x03;
-		CSocket misoc;
+		pDlg->writeOnLog("CANGREJO!!!!!!!!!");
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket"); 
 			return 0;
 		}
+		pDlg->writeOnLog("SALCHICHA!!!!!");
 		if(!misoc.Connect("127.0.0.1", 503)){
 			pDlg->writeOnLog("No conecta con puerto 503"); 
 			return 0;
 		}	
+		
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
@@ -434,87 +439,88 @@ UINT Acondicionamiento(LPVOID lp){
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
 		misoc.Close();
+		Sleep(150);
   }
+	
 	return 0;
 }
 
 UINT Luces(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
+	CSocket misoc;
 	while(pDlg->m_life){
+		pDlg->writeOnLog("HolaLUS");
 		pDlg->m_fin = false;
 		while(!pDlg->m_flag){}
-		 pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-		while(pDlg->m_life){
-			pDlg->m_fin = false;
-			while(!pDlg->m_flag){}
-			// ALGORITMO DE CONEXIÓN!!! 
-			unsigned char buf[20];
-			unsigned char rec_buf[20];
-			buf[0] = pDlg->m_numMsg >> 8;
-			buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-			buf[2] = 0x00;
-			buf[3] = 0x00; // protocol identifier, 0 in Modbus
-			buf[4] = 0x00;
-			buf[5] = 0x06; // length
-			buf[6] = 0x23; // ID luces
-			buf[7] = 0x06; // function code, write
-			CSocket misoc;
-			if(!misoc.Create()){ 
-				pDlg->m_log.AddString("Error al crear socket"); 
-				return 0;
-			}
-			if(!misoc.Connect("127.0.0.1", 504)){
-				pDlg->m_log.AddString("No conecta con puerto 504"); 
-				return 0;
-			}
-			int ok = 0;
-			// addresses and values for each light
-			buf[8] = 0x01;
-			buf[10] = 0;
-
-			// freno
-			buf[9] = 500 & 0xFF; // data address
-			buf[11] = 0x01; // example, on
-			misoc.Send(buf, 20);
-			misoc.Receive(rec_buf,20); 
-			if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-			// intermitente izq delantero
-			buf[9] = 501 & 0xFF; // data address
-			buf[11] = 0x01; // example, on
-			misoc.Send(buf, 20);
-			misoc.Receive(rec_buf,20); 
-			if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-			// intermitente der delantero
-			buf[9] = 502 & 0xFF; // data address
-			buf[11] = 0x00; // example, off
-			misoc.Send(buf, 20);
-			misoc.Receive(rec_buf,20); 
-			if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-			// intermitente izq trasero
-			buf[9] = 503 & 0xFF; // data address
-			buf[11] = 0x00; // example, off
-			misoc.Send(buf, 20);
-			misoc.Receive(rec_buf,20); 
-			if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-			// intermitente der trasero
-			buf[9] = 504 & 0xFF; // data address
-			buf[11] = 0x01; // example, on
-			misoc.Send(buf, 20);
-			misoc.Receive(rec_buf,20); 
-			if(memcmp(buf, rec_buf, 20) == 0) ok++;
-
-			if(ok == 5) pDlg->m_log.AddString("Luces OK");
-			else pDlg->m_log.AddString("Error en comunicación con las luces");
-			pDlg->m_numMsg++;
-			pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-			misoc.Close();
+		// ALGORITMO DE CONEXIÓN!!! 
+		unsigned char buf[20];
+		unsigned char rec_buf[20];
+		buf[0] = pDlg->m_numMsg >> 8;
+		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x23; // ID luces
+		buf[7] = 0x06; // function code, write
+		pDlg->writeOnLog("LUSSSS MAS LUSSS");
+		if(!misoc.Create()){ 
+			pDlg->m_log.AddString("Error al crear socket"); 
+			return 0;
 		}
-	
+		if(!misoc.Connect("127.0.0.1", 504)){
+			pDlg->m_log.AddString("No conecta con puerto 504"); 
+			return 0;
+		}
+		int ok = 0;
+		// addresses and values for each light
+		buf[8] = 0x01;
+		buf[10] = 0;
+
+		// freno
+		buf[9] = 500 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq delantero
+		buf[9] = 501 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der delantero
+		buf[9] = 502 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq trasero
+		buf[9] = 503 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der trasero
+		buf[9] = 504 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		if(ok == 5) pDlg->writeOnLog("Luces OK");
+		else pDlg->writeOnLog("Error en comunicación con las luces");
+		pDlg->m_numMsg++;
+		
+		pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+		misoc.Close();
+		Sleep(150);		
 	}
+	
 	return 0;
 }
 
