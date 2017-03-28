@@ -7,6 +7,7 @@
 #include "Led.h"
 #include "Gauge.h"
 #include <vector>
+#include "ModBus.h"
 
 // Cuadro de diálogo de CCentralitaDlg
 class CCentralitaDlg : public CDialogEx
@@ -57,4 +58,5 @@ public:
   bool m_fin;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
   void writeOnLog(CString str);
+  CModBus ModBusObj;
 };

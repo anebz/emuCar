@@ -143,7 +143,6 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_freno.SubclassDlgItem(imFreno, this);
   m_imTemperatura.SubclassDlgItem(imTemperatura, this);
   m_imRPM.SubclassDlgItem(imRPM, this);
-
   threads.push_back(AfxBeginThread(Motor,this));
   threads.push_back(AfxBeginThread(Luces,this));
   threads.push_back(AfxBeginThread(Acondicionamiento,this));
@@ -349,20 +348,7 @@ UINT Motor(LPVOID lp){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
-		unsigned char buf[20];
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x21; // ID motor
-		buf[7] = 0x04; // function code, read
-		short add = 400; 
-		buf[8] = add >> 8;
-		buf[9] = add & 0xFF; // data address
-		buf[10] = 0;
-		buf[11] = 0x02;
+    unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
 		CSocket misoc;
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket");
