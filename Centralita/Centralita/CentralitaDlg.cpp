@@ -345,9 +345,9 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 UINT Motor(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
-		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
+<<<<<<< HEAD
     //unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
 		unsigned char buf[20];
 
@@ -365,6 +365,9 @@ UINT Motor(LPVOID lp){
 		buf[9] = add & 0xFF; // data address
 		buf[10] = 0;
 		buf[11] = 0x02;
+=======
+    unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
+>>>>>>> 83ab1bee221f365861ed62f5422326048fba23ff
 		CSocket misoc;
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket");
@@ -387,7 +390,11 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> temperature
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+<<<<<<< HEAD
 		misoc.Close();
+=======
+    misoc.Close();
+>>>>>>> 83ab1bee221f365861ed62f5422326048fba23ff
   }
 	
 	return 0;
@@ -396,7 +403,6 @@ UINT Motor(LPVOID lp){
 UINT Acondicionamiento(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
-		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     /* ALGORITMO DE CONEXIÓN!!! */
 		unsigned char buf[20];
@@ -433,7 +439,11 @@ UINT Acondicionamiento(LPVOID lp){
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+<<<<<<< HEAD
 		misoc.Close();
+=======
+    misoc.Close();
+>>>>>>> 83ab1bee221f365861ed62f5422326048fba23ff
   }
 	return 0;
 }
@@ -441,6 +451,7 @@ UINT Acondicionamiento(LPVOID lp){
 UINT Luces(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
 	while(pDlg->m_life){
+<<<<<<< HEAD
 		pDlg->m_fin = false;
 		while(!pDlg->m_flag){}
 		 pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
@@ -524,6 +535,91 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+=======
+		pDlg->m_fin = false;
+		while(!pDlg->m_flag){}
+		 pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+  /*while(pDlg->m_life){
+		pDlg->m_fin = false;
+    while(!pDlg->m_flag){}
+    /* ALGORITMO DE CONEXIÓN!!! 
+		unsigned char buf[20];
+		unsigned char rec_buf[20];
+		buf[0] = pDlg->m_numMsg >> 8;
+		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x23; // ID luces
+		buf[7] = 0x06; // function code, write
+		CSocket misoc;
+		if(!misoc.Create()){ 
+			pDlg->m_log.AddString("Error al crear socket"); 
+			return 0;
+		}
+		if(!misoc.Connect("127.0.0.1", 504)){
+			pDlg->m_log.AddString("No conecta con puerto 504"); 
+			return 0;
+		}
+		int ok = 0;
+		// addresses and values for each light
+		buf[8] = 0x01;
+		buf[10] = 0;
+
+		// freno
+		buf[9] = 500 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq delantero
+		buf[9] = 501 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der delantero
+		buf[9] = 502 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente izq trasero
+		buf[9] = 503 & 0xFF; // data address
+		buf[11] = 0x00; // example, off
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		// intermitente der trasero
+		buf[9] = 504 & 0xFF; // data address
+		buf[11] = 0x01; // example, on
+		misoc.Send(buf, 20);
+		misoc.Receive(rec_buf,20); 
+		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+
+		if(ok == 5) pDlg->m_log.AddString("Luces OK");
+		else pDlg->m_log.AddString("Error en comunicación con las luces");
+		pDlg->m_numMsg++;
+    pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    while(!pDlg->m_fin){}
+  }*/
+	
+	}
+	return 0;
+}
+
+LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
+{
+	m_flag = false;
+  return 0;
+}
+
+>>>>>>> 83ab1bee221f365861ed62f5422326048fba23ff
 void CCentralitaDlg::OnBnClickedbnstart()
 {
 
@@ -544,6 +640,7 @@ void CCentralitaDlg::OnBnClickedbnstart()
 }
 
 
+<<<<<<< HEAD
 void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	m_flag = true;
@@ -555,3 +652,14 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 	toWrite += ": " + str;
 	m_log.AddString(toWrite);
  }
+=======
+	void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
+	{
+		m_flag = true;
+	}
+  void CCentralitaDlg::writeOnLog(CString str){
+     std::time_t result = std::time(nullptr);
+     CString toWrite = std::asctime(std::localtime(&result)) + ': ' + str;
+     m_log.AddString(toWrite);
+  }
+>>>>>>> 83ab1bee221f365861ed62f5422326048fba23ff
