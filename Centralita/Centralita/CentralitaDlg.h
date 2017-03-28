@@ -56,4 +56,5 @@ public:
   bool m_life;
   bool m_fin;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+  void writeOnLog(CString str);
 };

@@ -11,6 +11,7 @@ public:
 	CGauge();
 	virtual ~CGauge();
   int m_nivel;
+  int m_angulo;
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
