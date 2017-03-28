@@ -370,6 +370,7 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> temperature
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    misoc.Close();
   }
 	
 	return 0;
@@ -414,6 +415,7 @@ UINT Acondicionamiento(LPVOID lp){
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    misoc.Close();
   }
 	return 0;
 }
@@ -424,7 +426,6 @@ UINT Luces(LPVOID lp){
 		pDlg->m_fin = false;
 		while(!pDlg->m_flag){}
 		 pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-		while(!pDlg->m_fin){}
   /*while(pDlg->m_life){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
