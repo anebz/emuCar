@@ -50,7 +50,6 @@ END_MESSAGE_MAP()
 CLucesDlg::CLucesDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLucesDlg::IDD, pParent)
 	, m_port(0)
-	, m_freno(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -59,7 +58,6 @@ void CLucesDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_PORT, m_port);
-	DDX_Text(pDX, IDC_FRENO, m_freno);
 }
 
 BEGIN_MESSAGE_MAP(CLucesDlg, CDialogEx)
@@ -102,11 +100,17 @@ BOOL CLucesDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	luces[0].SubclassDlgItem(IDC_P0, this);
-	luces[1].SubclassDlgItem(IDC_P1, this);
-	luces[2].SubclassDlgItem(IDC_P2, this);
-	luces[3].SubclassDlgItem(IDC_P3, this);
-	luces[4].SubclassDlgItem(IDC_P4, this);
+	m_port = 504;
+	UpdateData(0);
+	luces = std::vector<CLed*>(5);
+	for(size_t i = 0; i<5; i++){
+		luces[i] = new CLed();
+	}
+	luces[0]->SubclassDlgItem(IDC_P0, this);
+	luces[1]->SubclassDlgItem(IDC_P1, this);
+	luces[2]->SubclassDlgItem(IDC_P2, this);
+	luces[3]->SubclassDlgItem(IDC_P3, this);
+	luces[4]->SubclassDlgItem(IDC_P4, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -165,7 +169,7 @@ HCURSOR CLucesDlg::OnQueryDragIcon()
 void CLucesDlg::OnBnClickedStart()
 {
 	UpdateData(1);
-	pSock = new CModbus(this);
+	pSock = new CMySock(this);
 	pSock->Create(m_port,SOCK_STREAM); // create socket
 	pSock->Listen();
 }

@@ -12,7 +12,8 @@ IMPLEMENT_DYNAMIC(CLed, CWnd)
 
 CLed::CLed()
 {
-	color = 0;
+	on = false;
+	red = false;
 }
 
 CLed::~CLed()
@@ -36,14 +37,12 @@ void CLed::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	CRect r;
 	GetClientRect(r);
-	switch(color){
-		case 1: 
-			dc.FillSolidRect(r,RGB(255,7,0)); // red
-		case 2: 
-			dc.FillSolidRect(r,RGB(255,118,0)); // orange
-		case 3: 
+	switch(on){
+		case true: 
+			if(red) dc.FillSolidRect(r,RGB(255,7,0)); // red
+			else dc.FillSolidRect(r,RGB(255,118,0)); // orange
+			return;
+		case false: 
 			dc.FillSolidRect(r,RGB(160,160,160)); // gray
-		default:
-			dc.FillSolidRect(r,RGB(255,255,255)); // white
 	}
 }

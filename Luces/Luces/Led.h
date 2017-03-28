@@ -10,7 +10,8 @@ class CLed : public CWnd
 public:
 	CLed();
 	virtual ~CLed();
-	short color;
+	bool on;
+	bool red;
 
 protected:
 	DECLARE_MESSAGE_MAP()

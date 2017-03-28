@@ -1,19 +1,15 @@
 #pragma once
-
-// CModbus command target
+#include <vector>
+#include "Led.h"
 
 class CLucesDlg;
 
-class CModbus : public CSocket
+class CModbus
 {
 public:
-	CModbus(CLucesDlg*);
-	CLucesDlg* pDlg;
-	short msg;
+	CModbus(void);
+	~CModbus(void);
 
-	virtual ~CModbus();
-	virtual void OnAccept(int nErrorCode);
-	unsigned char* Protocol(short add, int slider);
+	bool Protocol(std::vector<CLed*> luces, const unsigned char* buf);
 };
-
 

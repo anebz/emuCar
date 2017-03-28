@@ -3,8 +3,9 @@
 //
 
 #pragma once
+#include "MySock.h"
 #include "Led.h"
-#include "Modbus.h"
+#include <vector>
 
 // CLucesDlg dialog
 class CLucesDlg : public CDialogEx
@@ -12,8 +13,9 @@ class CLucesDlg : public CDialogEx
 // Construction
 public:
 	CLucesDlg(CWnd* pParent = NULL);	// standard constructor
-	CLed luces[4];
-	CModbus* pSock;
+	CMySock* pSock;
+	std::vector<CLed*> luces;
+
 
 // Dialog Data
 	enum { IDD = IDD_LUCES_DIALOG };
@@ -34,6 +36,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	int m_port;
-	CString m_freno;
 	afx_msg void OnBnClickedStart();
 };
