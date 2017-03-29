@@ -345,38 +345,30 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 
 // Controladores de mensaje de CCentralitaDlg
 UINT Motor(LPVOID lp){
-	/*
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
-		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     // ALGORITMO DE CONEXIÓN!!! 
     //unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
 		unsigned char buf[20];
-
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x21; // ID motor
-
-		buf[7] = 0x04; // function code, read
-		short add = 400; 
-		buf[8] = add >> 8;
-		buf[9] = add & 0xFF; // data address
-		buf[10] = 0;
-		buf[11] = 0x02;
+    pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2, buf);
 		CSocket misoc;
+    mtx.lock();
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket");
-			return 0;
+      mtx.unlock();
+      pDlg->m_statusLuces.Invalidate(true);
+			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 502)){
 			pDlg->writeOnLog("No conecta con puerto 502"); 
-			return 0;
+      mtx.unlock();
+      pDlg->m_statusLuces.Invalidate(true);
+			continue;
 		}	
+    mtx.unlock();
+    pDlg->m_statusLuces.m_color = 0;
+    pDlg->m_statusLuces.Invalidate(true);
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
@@ -390,28 +382,17 @@ UINT Motor(LPVOID lp){
 	  // process rec_buf --> temperature
 	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    mtx.lock();
 		misoc.Close();
-  }*/
-	while(1);
+    mtx.unlock();
+    Sleep(pDlg->m_tiempo / 100);
+  }
 	return 0;
 }
 
 UINT Acondicionamiento(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
-	CSocket misoc;
-	mtx.lock();
-	if(!misoc.Create()){ 
-		pDlg->writeOnLog("Error al crear socket"); 
-		return 0;
-	}
-	pDlg->writeOnLog("SALCHICHA!!!!!");
-	if(!misoc.Connect("127.0.0.1", 503)){
-		pDlg->writeOnLog("No conecta con puerto 503"); 
-		return 0;
-	}	
-	mtx.unlock();
   while(pDlg->m_life){
-		pDlg->writeOnLog("Holaddd");
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     // ALGORITMO DE CONEXIÓN!!! 
@@ -429,9 +410,25 @@ UINT Acondicionamiento(LPVOID lp){
 		buf[9] = add & 0xFF; // data address
 		buf[10] = 0;
 		buf[11] = 0x03;
-		pDlg->writeOnLog("CANGREJO!!!!!!!!!");
-
-
+    CSocket misoc;
+    mtx.lock();
+	  if(!misoc.Create()){ 
+		  pDlg->writeOnLog("Error al crear socket"); 
+      pDlg->m_statusAcondicionamiento.m_color = 5;
+      mtx.unlock();
+      pDlg->m_statusAcondicionamiento.Invalidate(true);
+		  continue;
+	  }
+	  if(!misoc.Connect("127.0.0.1", 503)){
+		  pDlg->writeOnLog("No conecta con puerto 503"); 
+      pDlg->m_statusAcondicionamiento.m_color = 5;
+      mtx.unlock();
+      pDlg->m_statusAcondicionamiento.Invalidate(true);
+		  continue;
+	  }	
+    pDlg->m_statusAcondicionamiento.m_color = 0;
+    pDlg->m_statusAcondicionamiento.Invalidate(true);
+	  mtx.unlock();   
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
@@ -443,20 +440,17 @@ UINT Acondicionamiento(LPVOID lp){
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-
-		Sleep(150);
+    mtx.lock();
+	  misoc.Close();
+	  mtx.unlock();
+		Sleep(pDlg->m_tiempo / 100);
   }
-	mtx.lock();
-	misoc.Close();
-	mtx.unlock();	
 	return 0;
 }
 
 UINT Luces(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
-	CSocket misoc;
 	while(pDlg->m_life){
-		pDlg->writeOnLog("HolaLUS");
 		pDlg->m_fin = false;
 		while(!pDlg->m_flag){}
 		// ALGORITMO DE CONEXIÓN!!! 
@@ -470,17 +464,25 @@ UINT Luces(LPVOID lp){
 		buf[5] = 0x06; // length
 		buf[6] = 0x23; // ID luces
 		buf[7] = 0x06; // function code, write
-		pDlg->writeOnLog("LUSSSS MAS LUSSS");
+    CSocket misoc;
 		mtx.lock();
 		if(!misoc.Create()){ 
-			pDlg->m_log.AddString("Error al crear socket"); 
-			return 0;
+			pDlg->writeOnLog("Error al crear socket"); 
+      pDlg->m_statusLuces.m_color = 5;
+      mtx.unlock();
+      pDlg->m_statusLuces.Invalidate(true);
+			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 504)){
-			pDlg->m_log.AddString("No conecta con puerto 504"); 
-			return 0;
+			pDlg->writeOnLog("No conecta con puerto 504"); 
+      pDlg->m_statusLuces.m_color = 5;
+      mtx.unlock();
+      pDlg->m_statusLuces.Invalidate(true);
+			continue;
 		}
-		mtx.unlock();
+    mtx.unlock();
+    pDlg->m_statusLuces.m_color = 0;
+    pDlg->m_statusLuces.Invalidate(true);
 		int ok = 0;
 		// addresses and values for each light
 		buf[8] = 0x01;
@@ -529,7 +531,7 @@ UINT Luces(LPVOID lp){
 		mtx.lock();
 		misoc.Close();
 		mtx.unlock();
-		Sleep(150);		
+		Sleep(pDlg->m_tiempo / 100);
 	}
 	
 	return 0;
@@ -543,7 +545,7 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
-
+  UpdateData(1);
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){
       threads.at(ii)->SuspendThread();

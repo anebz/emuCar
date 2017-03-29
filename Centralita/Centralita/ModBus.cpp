@@ -23,9 +23,8 @@ CModBus::~CModBus()
 BEGIN_MESSAGE_MAP(CModBus, CWnd)
 END_MESSAGE_MAP()
 
-unsigned char* CModBus::constructBuffer(int messageID, int slaveID, int functionCode, int dataAddress, int value){
+unsigned char* CModBus::constructBuffer(int messageID, int slaveID, int functionCode, int dataAddress, int value, unsigned char* buf){
   if(functionCode == 4){ // PARA READ
-    unsigned char buf[20];
 	  buf[0] = messageID >> 8;
 	  buf[1] = messageID & 0xFF; // transaction identifier
 	  buf[2] = 0x00;

@@ -40,12 +40,16 @@ void CLed::OnPaint()
   switch(m_color){
   case 0:
     b1.CreateSolidBrush(RGB(0, 201, 13));
+    break;
   case 1:
     b1.CreateSolidBrush(RGB(255, 7, 0));
+    break;
   case 2:
     b1.CreateSolidBrush(RGB(255, 118, 0));
+    break;
   default:
     b1.CreateSolidBrush(RGB(160, 160, 160));
+    break;
   }
   dc.SelectObject(&b1);
   dc.Rectangle(r);

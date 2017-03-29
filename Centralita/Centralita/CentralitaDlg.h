@@ -15,6 +15,7 @@ class CCentralitaDlg : public CDialogEx
 // Construcción
 public:
 	CCentralitaDlg(CWnd* pParent = NULL);	// Constructor estándar
+  ~CCentralitaDlg(){m_life = false;}
 	int m_numMsg;
 
 // Datos del cuadro de diálogo
