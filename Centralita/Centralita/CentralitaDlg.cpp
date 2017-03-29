@@ -349,34 +349,44 @@ UINT Motor(LPVOID lp){
   while(pDlg->m_life){
     while(!pDlg->m_flag){}
     // ALGORITMO DE CONEXIÓN!!! 
-    //unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
 		unsigned char buf[20];
+    mtx.lock();
+    int checker = pDlg->m_numMsg;
     pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2, buf);
+    mtx.unlock();
 		CSocket misoc;
     mtx.lock();
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket");
       mtx.unlock();
-      pDlg->m_statusLuces.Invalidate(true);
+      pDlg->m_statusMotor.m_color = 1;
+      pDlg->m_statusMotor.Invalidate(true);
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 502)){
 			pDlg->writeOnLog("No conecta con puerto 502"); 
       mtx.unlock();
-      pDlg->m_statusLuces.Invalidate(true);
+      pDlg->m_statusMotor.m_color = 1;
+      pDlg->m_statusMotor.Invalidate(true);
 			continue;
 		}	
     mtx.unlock();
-    pDlg->m_statusLuces.m_color = 0;
-    pDlg->m_statusLuces.Invalidate(true);
+    pDlg->m_statusMotor.m_color = 0;
+    pDlg->m_statusMotor.Invalidate(true);
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == pDlg->m_numMsg){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == checker){
 			int temp = rec_buf[9]*256 + rec_buf[10]; 
+      temp /= 3; // regla de tres, para ajustarlo a los valores máximos
+      pDlg->m_imTemperatura.m_nivel = temp;
 			int rpm = rec_buf[11]*256 + rec_buf[12];
+      rpm /= 70;
+      pDlg->m_imRPM.m_nivel = rpm;
 			pDlg->writeOnLog("Motor OK");
+      pDlg->m_imTemperatura.Invalidate(true);
+      pDlg->m_imRPM.Invalidate(true);
 		}else pDlg->writeOnLog("Error en comunicación con el motor. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
 	  // process rec_buf --> temperature
@@ -397,38 +407,28 @@ UINT Acondicionamiento(LPVOID lp){
     while(!pDlg->m_flag){}
     // ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x22; // ID accionamientos
-		buf[7] = 0x04; // function code, read
-		short add = 400; 
-		buf[8] = add >> 8;
-		buf[9] = add & 0xFF; // data address
-		buf[10] = 0;
-		buf[11] = 0x03;
+    mtx.lock();
+    pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 22, 4, 400, 3, buf);
+    mtx.unlock();
     CSocket misoc;
     mtx.lock();
 	  if(!misoc.Create()){ 
 		  pDlg->writeOnLog("Error al crear socket"); 
-      pDlg->m_statusAcondicionamiento.m_color = 5;
       mtx.unlock();
+      pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
 		  continue;
 	  }
 	  if(!misoc.Connect("127.0.0.1", 503)){
-		  pDlg->writeOnLog("No conecta con puerto 503"); 
-      pDlg->m_statusAcondicionamiento.m_color = 5;
+		  pDlg->writeOnLog("No conecta con puerto 503");
       mtx.unlock();
+      pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
 		  continue;
 	  }	
+    mtx.unlock(); 
     pDlg->m_statusAcondicionamiento.m_color = 0;
     pDlg->m_statusAcondicionamiento.Invalidate(true);
-	  mtx.unlock();   
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
@@ -436,6 +436,12 @@ UINT Acondicionamiento(LPVOID lp){
 			bool freno = rec_buf[10];
 			bool izq = rec_buf[12];
 			bool der = rec_buf[14];
+      pDlg->m_freno.m_color = ++freno;
+      pDlg->m_izquierdo.m_color = ++izq;
+      pDlg->m_derecho.m_color = ++der;
+      pDlg->m_freno.Invalidate(true);
+      pDlg->m_izquierdo.Invalidate(true);
+      pDlg->m_derecho.Invalidate(true);
 			pDlg->writeOnLog("Accionamientos OK");
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
@@ -468,15 +474,15 @@ UINT Luces(LPVOID lp){
 		mtx.lock();
 		if(!misoc.Create()){ 
 			pDlg->writeOnLog("Error al crear socket"); 
-      pDlg->m_statusLuces.m_color = 5;
-      mtx.unlock();
+      mtx.unlock(); 
+      pDlg->m_statusLuces.m_color = 1;
       pDlg->m_statusLuces.Invalidate(true);
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 504)){
 			pDlg->writeOnLog("No conecta con puerto 504"); 
-      pDlg->m_statusLuces.m_color = 5;
-      mtx.unlock();
+      mtx.unlock(); 
+      pDlg->m_statusLuces.m_color = 1;
       pDlg->m_statusLuces.Invalidate(true);
 			continue;
 		}
