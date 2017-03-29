@@ -51,18 +51,18 @@ void CModbus::OnAccept(int nErrorCode)
 
 		if(num == 1){
 			if(add == 400){
-				Bus[9] = pDlg->m_sl_temp*30 % 0xFF; // input registers
-				Bus[10] = pDlg->m_sl_temp*30 >> 8 ;// input registers
+				Bus[9] = pDlg->m_sl_temp*3 % 0xFF; // input registers
+				Bus[10] = pDlg->m_sl_temp*3 >> 8 ;// input registers
 			}else if(add == 401){
-				Bus[9] = pDlg->m_sl_rpm*700 % 0xFF; // input registers
-				Bus[10] = pDlg->m_sl_rpm*700 >> 8; // input registers
+				Bus[9] = pDlg->m_sl_rpm*70 % 0xFF; // input registers
+				Bus[10] = pDlg->m_sl_rpm*70 >> 8; // input registers
 			}else error = 1;
 
 		}else if(num == 2 && add == 400){
-			Bus[9] = pDlg->m_sl_temp*30 >> 8; // input registers
-			Bus[10] = pDlg->m_sl_temp*30 & 0xFF ;// input registers
-			Bus[11] = pDlg->m_sl_rpm*700 >> 8; // input registers
-			Bus[12] = pDlg->m_sl_rpm*700 & 0xFF; // input registers
+			Bus[9] = pDlg->m_sl_temp*3 >> 8; // input registers
+			Bus[10] = pDlg->m_sl_temp*3 & 0xFF ;// input registers
+			Bus[11] = pDlg->m_sl_rpm*70 >> 8; // input registers
+			Bus[12] = pDlg->m_sl_rpm*70 & 0xFF; // input registers
 		}else error = 1;
 	}else error = 1;
 
