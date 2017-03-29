@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include <ctime>
 #include <mutex>
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -88,7 +89,6 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(bnStart, &CCentralitaDlg::OnBnClickedbnstart)
-  ON_MESSAGE (WM_FIN_HILO, OnFinHilo)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -145,12 +145,7 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_freno.SubclassDlgItem(imFreno, this);
   m_imTemperatura.SubclassDlgItem(imTemperatura, this);
   m_imRPM.SubclassDlgItem(imRPM, this);
-  threads.push_back(AfxBeginThread(Motor,this));
-  threads.push_back(AfxBeginThread(Luces,this));
-  threads.push_back(AfxBeginThread(Acondicionamiento,this));
-  for(size_t ii = 0; ii < threads.size(); ii++){
-    threads.at(ii)->SuspendThread();
-  }
+
   
 	return TRUE;  // Devuelve TRUE  a menos que establezca el foco en un control
 }
@@ -203,8 +198,8 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-/*COMUNICACION CON MOTOR
-	unsigned char buf[20];
+//COMUNICACION CON MOTOR
+	/*unsigned char buf[20];
 
 	buf[0] = m_numMsg >> 8;
 	buf[1] = m_numMsg & 0xFF; // transaction identifier
@@ -239,9 +234,8 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
 	m_numMsg++;*/
 	
-
-	/*COMUNICACION CON ACCIONAMIENTOS
-	unsigned char buf[20];
+	//COMUNICACION CON ACCIONAMIENTOS
+	/*unsigned char buf[20];
 
 	buf[0] = m_numMsg >> 8;
 	buf[1] = m_numMsg & 0xFF; // transaction identifier
@@ -277,8 +271,8 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 	m_numMsg++;*/
 	
-	/*COMUNICACION CON LUCES
-	unsigned char buf[20];
+	//COMUNICACION CON LUCES
+	/*unsigned char buf[20];
 	unsigned char rec_buf[20];
 
 	buf[0] = m_numMsg >> 8;
@@ -343,149 +337,35 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	else m_log.AddString("Error en comunicación con las luces");
 	m_numMsg++;*/
 
-// Controladores de mensaje de CCentralitaDlg
-UINT Motor(LPVOID lp){
-	/*
-  auto *pDlg = (CCentralitaDlg*) lp;
-  while(pDlg->m_life){
-		pDlg->m_fin = false;
-    while(!pDlg->m_flag){}
-    // ALGORITMO DE CONEXIÓN!!! 
-    //unsigned char* buf = pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2);
-		unsigned char buf[20];
 
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x21; // ID motor
-
-		buf[7] = 0x04; // function code, read
-		short add = 400; 
-		buf[8] = add >> 8;
-		buf[9] = add & 0xFF; // data address
-		buf[10] = 0;
-		buf[11] = 0x02;
-		CSocket misoc;
-		if(!misoc.Create()){ 
-			pDlg->writeOnLog("Error al crear socket");
-			return 0;
-		}
-		if(!misoc.Connect("127.0.0.1", 502)){
-			pDlg->writeOnLog("No conecta con puerto 502"); 
-			return 0;
-		}	
-		misoc.Send(buf, 20);
-		unsigned char rec_buf[20];
-		int len = misoc.Receive(rec_buf,20); 
-
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == pDlg->m_numMsg){
-			int temp = rec_buf[9]*256 + rec_buf[10]; 
-			int rpm = rec_buf[11]*256 + rec_buf[12];
-			pDlg->writeOnLog("Motor OK");
-		}else pDlg->writeOnLog("Error en comunicación con el motor. No se han recibido 3 datos");
-		pDlg->m_numMsg++;
-	  // process rec_buf --> temperature
-	  // process rec_buf --> rpm
-    pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-		misoc.Close();
-  }*/
-	while(1);
-	return 0;
-}
-
-UINT Acondicionamiento(LPVOID lp){
-  auto *pDlg = (CCentralitaDlg*) lp;
+UINT Luces(LPVOID lp)
+{
+	CCentralitaDlg *pDlg = (CCentralitaDlg*)lp;
 	CSocket misoc;
 	mtx.lock();
-	if(!misoc.Create()){ 
-		pDlg->writeOnLog("Error al crear socket"); 
-		return 0;
-	}
-	pDlg->writeOnLog("SALCHICHA!!!!!");
-	if(!misoc.Connect("127.0.0.1", 503)){
-		pDlg->writeOnLog("No conecta con puerto 503"); 
-		return 0;
-	}	
+	misoc.Create();
+	misoc.Connect("127.0.0.1", 504);
 	mtx.unlock();
-  while(pDlg->m_life){
-		pDlg->writeOnLog("Holaddd");
-		pDlg->m_fin = false;
-    while(!pDlg->m_flag){}
-    // ALGORITMO DE CONEXIÓN!!! 
-		unsigned char buf[20];
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x22; // ID accionamientos
-		buf[7] = 0x04; // function code, read
-		short add = 400; 
-		buf[8] = add >> 8;
-		buf[9] = add & 0xFF; // data address
-		buf[10] = 0;
-		buf[11] = 0x03;
-		pDlg->writeOnLog("CANGREJO!!!!!!!!!");
 
+	unsigned char buf[20];
+	unsigned char rec_buf[20];
 
-		misoc.Send(buf, 20);
-		unsigned char rec_buf[20];
-		int len = misoc.Receive(rec_buf,20); 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
-			bool freno = rec_buf[10];
-			bool izq = rec_buf[12];
-			bool der = rec_buf[14];
-			pDlg->writeOnLog("Accionamientos OK");
-		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
-		pDlg->m_numMsg++;
-    pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+	while(1){
 
-		Sleep(150);
-  }
-	mtx.lock();
-	misoc.Close();
-	mtx.unlock();	
-	return 0;
-}
-
-UINT Luces(LPVOID lp){
-  auto *pDlg = (CCentralitaDlg*) lp;
-	CSocket misoc;
-	while(pDlg->m_life){
-		pDlg->writeOnLog("HolaLUS");
-		pDlg->m_fin = false;
-		while(!pDlg->m_flag){}
-		// ALGORITMO DE CONEXIÓN!!! 
-		unsigned char buf[20];
-		unsigned char rec_buf[20];
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
+		buf[0] = 1 >> 8;
+		buf[1] = 1 & 0xFF; // transaction identifier
 		buf[2] = 0x00;
 		buf[3] = 0x00; // protocol identifier, 0 in Modbus
 		buf[4] = 0x00;
 		buf[5] = 0x06; // length
 		buf[6] = 0x23; // ID luces
+
 		buf[7] = 0x06; // function code, write
-		pDlg->writeOnLog("LUSSSS MAS LUSSS");
-		mtx.lock();
-		if(!misoc.Create()){ 
-			pDlg->m_log.AddString("Error al crear socket"); 
-			return 0;
-		}
-		if(!misoc.Connect("127.0.0.1", 504)){
-			pDlg->m_log.AddString("No conecta con puerto 504"); 
-			return 0;
-		}
-		mtx.unlock();
 		int ok = 0;
+
 		// addresses and values for each light
 		buf[8] = 0x01;
 		buf[10] = 0;
-
 		// freno
 		buf[9] = 500 & 0xFF; // data address
 		buf[11] = 0x01; // example, on
@@ -521,43 +401,71 @@ UINT Luces(LPVOID lp){
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
 
-		if(ok == 5) pDlg->writeOnLog("Luces OK");
-		else pDlg->writeOnLog("Error en comunicación con las luces");
-		pDlg->m_numMsg++;
-		
-		pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
-		mtx.lock();
-		misoc.Close();
-		mtx.unlock();
-		Sleep(150);		
+		if(ok == 5) pDlg->m_log.AddString("Luces OK");
+		else pDlg->m_log.AddString("Error en comunicación con las luces");
+
+		Sleep(500);
 	}
+
 	
+	mtx.lock();
+	misoc.Close();
+	mtx.unlock();
 	return 0;
 }
 
-LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
+UINT Acc(LPVOID lp)
 {
-	m_flag = false;
+	CCentralitaDlg *pDlg = (CCentralitaDlg*)lp;
+	CSocket c2;
+	mtx.lock();
+	c2.Create();
+	c2.Connect("127.0.0.1", 503);
+	mtx.unlock();
+
+	unsigned char buf[20];
+
+	while(1){
+
+		buf[0] = 1 >> 8;
+		buf[1] = 1 & 0xFF; // transaction identifier
+		buf[2] = 0x00;
+		buf[3] = 0x00; // protocol identifier, 0 in Modbus
+		buf[4] = 0x00;
+		buf[5] = 0x06; // length
+		buf[6] = 0x22; // ID accionamientos
+
+		buf[7] = 0x04; // function code, read
+		short add = 400; 
+		buf[8] = add >> 8;
+		buf[9] = add & 0xFF; // data address
+		buf[10] = 0;
+		buf[11] = 0x03;
+
+		c2.Send(buf, 20);
+		unsigned char rec_buf[20];
+		int len = c2.Receive(rec_buf,20); 
+
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
+			bool freno = rec_buf[10];
+			bool izq = rec_buf[12];
+			bool der = rec_buf[14];
+			pDlg->m_log.AddString("Accionamientos OK" + freno + izq + der);
+		}else pDlg->m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
+
+		Sleep(500);
+	}
+
+	mtx.lock();
+	c2.Close();
+	mtx.unlock();
 	return 0;
 }
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
-
-  if(m_start_stop){
-    for(size_t ii = 0; ii < threads.size(); ii++){
-      threads.at(ii)->SuspendThread();
-    }
-    m_start_stop = false;
-		KillTimer(1);
-  }
-  else{
-    for(size_t ii = 0; ii < threads.size(); ii++){
-      threads.at(ii)->ResumeThread();
-    }
-    m_start_stop = true;
-		SetTimer(1, m_tiempo, NULL);
-  }
+	CWinThread *p1 = AfxBeginThread(Luces,this);
+	CWinThread *p2 = AfxBeginThread(Acc,this);
 }
 
 
