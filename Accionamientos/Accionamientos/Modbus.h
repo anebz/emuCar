@@ -1,16 +1,12 @@
 #pragma once
 
-// CModbus command target
-
-class CAccionamientosDlg;
-
-class CModbus : public CSocket
+class CModbus
 {
-public:
-	CModbus(CAccionamientosDlg*);
-	CAccionamientosDlg* pDlg;
-	virtual ~CModbus();
-	virtual void OnAccept(int nErrorCode);
-};
 
+public:
+	CModbus(void);
+	~CModbus(void);
+
+	bool Protocol(const unsigned char* buf, unsigned char* Bus, const BOOL* m_button);
+};
 

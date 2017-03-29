@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CAccionamientosDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_START, &CAccionamientosDlg::OnBnClickedStart)
+	ON_BN_CLICKED(IDCANCEL, &CAccionamientosDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -161,7 +162,14 @@ HCURSOR CAccionamientosDlg::OnQueryDragIcon()
 void CAccionamientosDlg::OnBnClickedStart()
 {
 	UpdateData(1);
-	pSock = new CModbus(this);
+	pSock = new CMySocket(this);
 	pSock->Create(m_port, SOCK_STREAM);
 	pSock->Listen();
+}
+
+
+void CAccionamientosDlg::OnBnClickedCancel()
+{
+	//pSock->Close();
+	CDialogEx::OnCancel();
 }

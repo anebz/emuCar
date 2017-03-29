@@ -36,6 +36,9 @@
     <ClInclude Include="Modbus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MySocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Accionamientos.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Modbus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,16 +1,11 @@
 #pragma once
 
-// CModbus command target
-class CMotorDlg;
-
-class CModbus : public CSocket
+class CModbus
 {
+
 public:
-	CModbus(CMotorDlg*);
-	CMotorDlg* pDlg;
+	CModbus(void);
+	~CModbus(void);
 
-	virtual ~CModbus();
-	virtual void OnAccept(int nErrorCode);
+	bool Protocol(const unsigned char* buf, unsigned char* Bus, int temp, int rpm);
 };
-
-

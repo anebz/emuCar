@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "Modbus.h"
+#include "MySocket.h"
 
 // CMotorDlg dialog
 class CMotorDlg : public CDialogEx
@@ -11,7 +11,7 @@ class CMotorDlg : public CDialogEx
 // Construction
 public:
 	CMotorDlg(CWnd* pParent = NULL);	// standard constructor
-	CModbus *pSock;
+	CMySocket *pSock;
 
 // Dialog Data
 	enum { IDD = IDD_MOTOR_DIALOG };
@@ -37,4 +37,7 @@ public:
 	int m_sl_rpm;
 	int m_port;
 	afx_msg void OnBnClickedStart();
+	afx_msg void OnNMReleasedcaptureSl1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSl2(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedCancel();
 };

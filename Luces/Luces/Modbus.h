@@ -2,8 +2,6 @@
 #include <vector>
 #include "Led.h"
 
-class CLucesDlg;
-
 class CModbus
 {
 public:

@@ -73,6 +73,9 @@ BEGIN_MESSAGE_MAP(CMotorDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_START, &CMotorDlg::OnBnClickedStart)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SL1, &CMotorDlg::OnNMReleasedcaptureSl1)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SL2, &CMotorDlg::OnNMReleasedcaptureSl2)
+	ON_BN_CLICKED(IDCANCEL, &CMotorDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -109,6 +112,8 @@ BOOL CMotorDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	m_port = 502;
+	m_temp.Format("Temperatura actual: 0");
+	m_rpm.Format("RPM actual: 0");
 	UpdateData(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -166,7 +171,32 @@ HCURSOR CMotorDlg::OnQueryDragIcon()
 void CMotorDlg::OnBnClickedStart()
 {
 	UpdateData(1);
-	pSock = new CModbus(this);
+	pSock = new CMySocket(this);
 	pSock->Create(m_port, SOCK_STREAM);
 	pSock->Listen();
+}
+
+
+void CMotorDlg::OnNMReleasedcaptureSl1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateData(1);
+	m_temp.Format("Temperatura actual: %d", m_sl_temp*3);
+	UpdateData(0);
+	*pResult = 0;
+}
+
+
+void CMotorDlg::OnNMReleasedcaptureSl2(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateData(1);
+	m_rpm.Format("RPM actual: %d", m_sl_rpm*70);
+	UpdateData(0);
+	*pResult = 0;
+}
+
+
+void CMotorDlg::OnBnClickedCancel()
+{
+	pSock->Close();
+	CDialogEx::OnCancel();
 }
