@@ -360,6 +360,7 @@ UINT Motor(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusMotor.m_color = 1;
       pDlg->m_statusMotor.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,1);
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 502)){
@@ -367,6 +368,7 @@ UINT Motor(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusMotor.m_color = 1;
       pDlg->m_statusMotor.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,1);
 			continue;
 		}	
     mtx.unlock();
@@ -416,6 +418,7 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }
 	  if(!misoc.Connect("127.0.0.1", 503)){
@@ -423,6 +426,7 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }	
     mtx.unlock(); 
@@ -435,9 +439,9 @@ UINT Acondicionamiento(LPVOID lp){
 			bool freno = rec_buf[10];
 			bool izq = rec_buf[12];
 			bool der = rec_buf[14];
-      pDlg->m_freno.m_color = ++freno;
-      pDlg->m_izquierdo.m_color = ++izq;
-      pDlg->m_derecho.m_color = ++der;
+      pDlg->m_freno.m_color = !freno;
+      pDlg->m_izquierdo.m_color = !izq;
+      pDlg->m_derecho.m_color = !der;
       pDlg->m_freno.Invalidate(true);
       pDlg->m_izquierdo.Invalidate(true);
       pDlg->m_derecho.Invalidate(true);
@@ -476,6 +480,7 @@ UINT Luces(LPVOID lp){
       mtx.unlock(); 
       pDlg->m_statusLuces.m_color = 1;
       pDlg->m_statusLuces.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,3);
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 504)){
@@ -483,6 +488,7 @@ UINT Luces(LPVOID lp){
       mtx.unlock(); 
       pDlg->m_statusLuces.m_color = 1;
       pDlg->m_statusLuces.Invalidate(true);
+      pDlg->PostMessage(WM_FIN_HILO,3);
 			continue;
 		}
     mtx.unlock();
