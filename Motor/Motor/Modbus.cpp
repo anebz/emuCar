@@ -32,7 +32,7 @@ void CModbus::OnAccept(int nErrorCode)
 	bool error = 0;
 	int len = cliente.Receive(buf,20); 
 
-	if(buf[6] != 0x21) error = 1;
+	if(buf[6] != 21) error = 1;
 	else if(buf[7] == 0x04){ // read more
 			
 		int add = buf[8]*256 + buf[9];

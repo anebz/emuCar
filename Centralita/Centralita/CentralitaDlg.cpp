@@ -238,9 +238,8 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 		m_log.AddString("Motor OK");
 	}else m_log.AddString("Error en comunicación con el motor. No se han recibido 3 datos");
 	m_numMsg++;*/
-	
 
-	/*COMUNICACION CON ACCIONAMIENTOS
+/*COMUNICACION CON ACCIONAMIENTOS
 	unsigned char buf[20];
 
 	buf[0] = m_numMsg >> 8;
@@ -277,7 +276,7 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 	}else m_log.AddString("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 	m_numMsg++;*/
 	
-	/*COMUNICACION CON LUCES
+/*COMUNICACION CON LUCES
 	unsigned char buf[20];
 	unsigned char rec_buf[20];
 

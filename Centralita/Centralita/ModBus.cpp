@@ -50,6 +50,4 @@ unsigned char* CModBus::constructBuffer(int messageID, int slaveID, int function
 }
 
 
-// Controladores de mensajes de CModBus
-
 
