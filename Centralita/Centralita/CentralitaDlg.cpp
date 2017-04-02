@@ -351,7 +351,7 @@ UINT Motor(LPVOID lp){
 		unsigned char buf[20];
     mtx.lock();
     int checker = pDlg->m_numMsg;
-    pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 21, 4, 400, 2, buf);
+    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 21, 4, 400, 2);
     mtx.unlock();
 		CSocket misoc;
     mtx.lock();
@@ -408,7 +408,7 @@ UINT Acondicionamiento(LPVOID lp){
     // ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
     mtx.lock();
-    pDlg->ModBusObj.constructBuffer(pDlg->m_numMsg, 22, 4, 400, 3, buf);
+    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 22, 4, 400, 3);
     mtx.unlock();
     CSocket misoc;
     mtx.lock();
@@ -464,14 +464,6 @@ UINT Luces(LPVOID lp){
 		// ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
 		unsigned char rec_buf[20];
-		buf[0] = pDlg->m_numMsg >> 8;
-		buf[1] = pDlg->m_numMsg & 0xFF; // transaction identifier
-		buf[2] = 0x00;
-		buf[3] = 0x00; // protocol identifier, 0 in Modbus
-		buf[4] = 0x00;
-		buf[5] = 0x06; // length
-		buf[6] = 0x23; // ID luces
-		buf[7] = 0x06; // function code, write
     CSocket misoc;
 		mtx.lock();
 		if(!misoc.Create()){ 
@@ -493,49 +485,48 @@ UINT Luces(LPVOID lp){
     mtx.unlock();
     pDlg->m_statusLuces.m_color = 0;
     pDlg->m_statusLuces.Invalidate(true);
+
 		int ok = 0;
-		// addresses and values for each light
-		buf[8] = 0x01;
-		buf[10] = 0;
+
+		// si guardas los booleanos de las luces en un array, todo esto de abajo se puede poner en un for
 
 		// freno
-		buf[9] = 500 & 0xFF; // data address
-		buf[11] = 0x01; // example, on
+		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 500, 1); // el ultimo valor es el booleano que va cambiando según accionamientos, ahora está al azar
 		misoc.Send(buf, 20);
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+		pDlg->m_numMsg++;
 
 		// intermitente izq delantero
-		buf[9] = 501 & 0xFF; // data address
-		buf[11] = 0x01; // example, on
+		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 501, 0);
 		misoc.Send(buf, 20);
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+		pDlg->m_numMsg++;
 
 		// intermitente der delantero
-		buf[9] = 502 & 0xFF; // data address
-		buf[11] = 0x00; // example, off
+		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 502, 1);
 		misoc.Send(buf, 20);
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+		pDlg->m_numMsg++;
 
 		// intermitente izq trasero
-		buf[9] = 503 & 0xFF; // data address
-		buf[11] = 0x00; // example, off
+		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 503, 0);
 		misoc.Send(buf, 20);
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+		pDlg->m_numMsg++;
 
 		// intermitente der trasero
-		buf[9] = 504 & 0xFF; // data address
-		buf[11] = 0x01; // example, on
+		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 504, 1);
 		misoc.Send(buf, 20);
 		misoc.Receive(rec_buf,20); 
 		if(memcmp(buf, rec_buf, 20) == 0) ok++;
+		pDlg->m_numMsg++;
 
 		if(ok == 5) pDlg->writeOnLog("Luces OK");
 		else pDlg->writeOnLog("Error en comunicación con las luces");
-		pDlg->m_numMsg++;
 		
 		pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
 		mtx.lock();

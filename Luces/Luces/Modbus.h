@@ -8,6 +8,6 @@ public:
 	CModbus(void);
 	~CModbus(void);
 
-	bool Protocol(std::vector<CLed*> luces, const unsigned char* buf);
+	bool Protocol(std::vector<CLed*> luces, unsigned char* buf);
 };
 
