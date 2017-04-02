@@ -27,15 +27,15 @@ bool CModbus::Protocol(const unsigned char* buf, unsigned char* Bus, int temp, i
 		Bus[7] = 0x04; // function mode
 		Bus[8] = (num*2) & 0xFF; // byte count
 
-		if(add == 400 || add == 401){
+		if((add == 400 || add == 401) && num <= 2){
 			int pos = 9;
-			for(size_t i = 399 + num; i <= 401; i++){
-				if(add == 400){
-					Bus[pos++] =temp*3 % 0xFF; 
-					Bus[pos++] = temp*3 >> 8;
-				}else if(add == 401){
-					Bus[pos++] = rpm*70 % 0xFF;
+			for(size_t i = 400 + (num-2); i <= 401; i++){
+				if(i == 400){
+					Bus[pos++] = temp*3 >> 8; 
+					Bus[pos++] = temp*3 & 0xFF;
+				}else if(i == 401){
 					Bus[pos++] = rpm*70 >> 8; 
+					Bus[pos++] = rpm*70 & 0xFF;
 				}
 			}
 		}else error = 1;
