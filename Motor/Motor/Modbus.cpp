@@ -36,10 +36,12 @@ bool CModbus::Protocol(const unsigned char* buf, unsigned char* Bus, int temp, i
 					Bus[pos++] = temp*3 & 0xFF;
 				}else if(i == 401){
 					Bus[pos++] = rpm*70 >> 8; 
-					Bus[pos++] = rpm*70 & 0xFF;
+					Bus[pos] = rpm*70 & 0xFF;
 				}
 			}
+			Bus[5] = pos - 5; // length
 		}else error = 1;
 	}else error = 1;
+
 	return error;
 }

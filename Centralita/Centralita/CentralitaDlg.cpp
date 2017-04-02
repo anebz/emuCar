@@ -351,7 +351,8 @@ UINT Motor(LPVOID lp){
 		unsigned char buf[20];
     mtx.lock();
     int checker = pDlg->m_numMsg;
-    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 21, 4, 400, 2);
+		short n_data = 2;
+    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 21, 4, 400, n_data);
     mtx.unlock();
 		CSocket misoc;
     mtx.lock();
@@ -378,10 +379,11 @@ UINT Motor(LPVOID lp){
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == checker){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == checker && rec_buf[5] == (3+2*n_data)){
 			int temp = rec_buf[9]*256 + rec_buf[10]; 
       temp /= 3; // regla de tres, para ajustarlo a los valores máximos
       pDlg->m_imTemperatura.m_nivel = temp;
+
 			int rpm = rec_buf[11]*256 + rec_buf[12];
       pDlg->m_imRPM.m_nivel = rpm;
 			pDlg->writeOnLog("Motor OK");
@@ -389,8 +391,6 @@ UINT Motor(LPVOID lp){
       pDlg->m_imRPM.Invalidate(true);
 		}else pDlg->writeOnLog("Error en comunicación con el motor. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
-	  // process rec_buf --> temperature
-	  // process rec_buf --> rpm
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
     mtx.lock();
 		misoc.Close();
@@ -408,7 +408,8 @@ UINT Acondicionamiento(LPVOID lp){
     // ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
     mtx.lock();
-    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 22, 4, 400, 3);
+		short n_data = 3;
+    pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 22, 4, 400, n_data);
     mtx.unlock();
     CSocket misoc;
     mtx.lock();
@@ -434,7 +435,7 @@ UINT Acondicionamiento(LPVOID lp){
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data)){
 			bool freno = rec_buf[10];
 			bool izq = rec_buf[12];
 			bool der = rec_buf[14];

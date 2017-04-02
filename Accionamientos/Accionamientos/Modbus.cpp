@@ -21,8 +21,9 @@ bool CModbus::Protocol(const unsigned char* buf, unsigned char* Bus, const BOOL*
 		int add = buf[8]*256 + buf[9];
 		int num = buf[10]*256 + buf[11];
 
-		for(size_t i = 0; i<7; i++)
+		for(size_t i = 0; i<7; i++){
 			Bus[i] = buf[i];
+		}
 
 		Bus[7] = 0x04; // function mode
 		Bus[8] = (num*2) & 0xFF; // byte count
@@ -33,6 +34,7 @@ bool CModbus::Protocol(const unsigned char* buf, unsigned char* Bus, const BOOL*
 				Bus[++pos] = 0x00;
 				Bus[++pos] = m_button[i + add - 400] & 0xFF;
 			}
+			Bus[5] = pos - 5; // length
 		}else error = 1;
 	}else error = 1;
 	return error;
