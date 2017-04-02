@@ -39,16 +39,16 @@ void CLed::OnPaint()
   CBrush b1;
   switch(m_color){
   case 0:
-    b1.CreateSolidBrush(RGB(0, 201, 13));
+    b1.CreateSolidBrush(RGB(0, 201, 13)); // verde
     break;
   case 1:
-    b1.CreateSolidBrush(RGB(255, 7, 0));
+    b1.CreateSolidBrush(RGB(255, 7, 0)); // rojo
     break;
   case 2:
-    b1.CreateSolidBrush(RGB(255, 118, 0));
+    b1.CreateSolidBrush(RGB(255, 118, 0)); // ambar
     break;
   default:
-    b1.CreateSolidBrush(RGB(160, 160, 160));
+    b1.CreateSolidBrush(RGB(160, 160, 160)); // gris
     break;
   }
   dc.SelectObject(&b1);
