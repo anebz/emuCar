@@ -383,7 +383,6 @@ UINT Motor(LPVOID lp){
       temp /= 3; // regla de tres, para ajustarlo a los valores máximos
       pDlg->m_imTemperatura.m_nivel = temp;
 			int rpm = rec_buf[11]*256 + rec_buf[12];
-      rpm /= 70;
       pDlg->m_imRPM.m_nivel = rpm;
 			pDlg->writeOnLog("Motor OK");
       pDlg->m_imTemperatura.Invalidate(true);

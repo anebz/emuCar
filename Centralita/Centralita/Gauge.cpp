@@ -12,7 +12,7 @@ IMPLEMENT_DYNAMIC(CGauge, CWnd)
 
 CGauge::CGauge()
 {
-  m_nivel = 0; // SIEMPRE ENTRE 0 y 100!!
+  m_nivel = 0; // SIEMPRE ENTRE 1 y 100!!
   m_angulo = 0;
 }
 
@@ -43,9 +43,9 @@ void CGauge::OnPaint()
   dc.Arc(r.left, r.top, r.right, r.bottom * 2, r.left, r.bottom, r.right, r.bottom);
   CPen p1(PS_SOLID,3, RGB(255, 0, 0));
   dc.SelectObject(&p1);
-  dc.MoveTo(r.right / 2, r.bottom);
+  dc.MoveTo(r.right / 2, r.bottom - 5);
   int rd = r.right / 2 < r.bottom ? r.right / 2 : r.bottom;
   int x = (int)(rd * sin(m_angulo  * 3.1416 / 180));
   int y = (int)(rd * cos(m_angulo * 3.1416 / 180));
-  dc.LineTo(r.right / 2 + x, r.bottom + y);
+  dc.LineTo(r.right / 2 + x, r.bottom + y - 5);
 }
