@@ -323,9 +323,12 @@ UINT Acondicionamiento(LPVOID lp){
 		int len = misoc.Receive(rec_buf,20); 
 		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data)){
 			bool freno = rec_buf[10];
+			pDlg->luces[0] = freno;
 			bool izq = rec_buf[12];
+			pDlg->luces[1] = izq; pDlg->luces[3] = izq; 
 			bool der = rec_buf[14];
-			if (freno) pDlg->m_freno.m_color = 1;
+			pDlg->luces[2] = der; pDlg->luces[4] = der; 
+			if(freno) pDlg->m_freno.m_color = 1;
 			else pDlg->m_freno.m_color = 5;
 			pDlg->m_freno.Invalidate(true);
 			if(izq){
@@ -395,43 +398,13 @@ UINT Luces(LPVOID lp){
     pDlg->m_statusLuces.Invalidate(true);
 
 		int ok = 0;
-
-		// si guardas los booleanos de las luces en un array, todo esto de abajo se puede poner en un for
-
-		// freno
-		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 500, !pDlg->m_freno.m_color); // el ultimo valor es el booleano que va cambiando según accionamientos, ahora está al azar
-		misoc.Send(buf, 20);
-		misoc.Receive(rec_buf,20); 
-		if(memcmp(buf, rec_buf, 20) == 0) ok++;
-		pDlg->m_numMsg++;
-
-		// intermitente izq delantero
-		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 501, !pDlg->m_izquierdo.m_color);
-		misoc.Send(buf, 20);
-		misoc.Receive(rec_buf,20); 
-		if(memcmp(buf, rec_buf, 20) == 0) ok++;
-		pDlg->m_numMsg++;
-
-		// intermitente der delantero
-		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 502, !pDlg->m_derecho.m_color);
-		misoc.Send(buf, 20);
-		misoc.Receive(rec_buf,20); 
-		if(memcmp(buf, rec_buf, 20) == 0) ok++;
-		pDlg->m_numMsg++;
-
-		// intermitente izq trasero
-		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 503, !pDlg->m_izquierdo.m_color);
-		misoc.Send(buf, 20);
-		misoc.Receive(rec_buf,20); 
-		if(memcmp(buf, rec_buf, 20) == 0) ok++;
-		pDlg->m_numMsg++;
-
-		// intermitente der trasero
-		pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 504, !pDlg->m_derecho.m_color);
-		misoc.Send(buf, 20);
-		misoc.Receive(rec_buf,20); 
-		if(memcmp(buf, rec_buf, 20) == 0) ok++;
-		pDlg->m_numMsg++;
+		for(size_t i = 0; i<5; i++){
+			pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 23, 6, 500+i, pDlg->luces[i]);
+			misoc.Send(buf, 20);
+			misoc.Receive(rec_buf,20); 
+			if(memcmp(buf, rec_buf, 20) == 0) ok++;
+			pDlg->m_numMsg++;
+		}
 
 		if(ok == 5) pDlg->writeOnLog("Luces OK");
 		else pDlg->writeOnLog("Error en comunicación con las luces");

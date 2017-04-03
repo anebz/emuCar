@@ -17,6 +17,7 @@ public:
 	CCentralitaDlg(CWnd* pParent = NULL);	// Constructor estándar
   ~CCentralitaDlg(){m_life = false;}
 	int m_numMsg;
+	bool luces[5];
 
 // Datos del cuadro de diálogo
 	enum { IDD = IDD_CENTRALITA_DIALOG };
