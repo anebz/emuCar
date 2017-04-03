@@ -90,6 +90,7 @@ BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
 	ON_BN_CLICKED(bnStart, &CCentralitaDlg::OnBnClickedbnstart)
   ON_MESSAGE (WM_FIN_HILO, OnFinHilo)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(bnClear, &CCentralitaDlg::OnBnClickedbnclear)
 END_MESSAGE_MAP()
 
 
@@ -473,4 +474,10 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 	CString toWrite = std::asctime(std::localtime(&result));
 	toWrite += ": " + str;
 	m_log.AddString(toWrite);
+ }
+
+
+ void CCentralitaDlg::OnBnClickedbnclear()
+ {
+	 m_log.ResetContent();
  }

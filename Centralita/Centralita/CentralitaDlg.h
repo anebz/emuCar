@@ -62,4 +62,5 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
   void writeOnLog(CString str);
   CModBus ModBusObj;
+	afx_msg void OnBnClickedbnclear();
 };
