@@ -57,6 +57,8 @@ public:
   bool m_flag;
   bool m_life;
   bool m_fin;
+	bool m_flag2;
+	bool m_flag3;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
   void writeOnLog(CString str);
   CModBus ModBusObj;

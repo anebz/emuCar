@@ -302,12 +302,25 @@ UINT Acondicionamiento(LPVOID lp){
 			bool freno = rec_buf[10];
 			bool izq = rec_buf[12];
 			bool der = rec_buf[14];
-      pDlg->m_freno.m_color = !freno;
-      pDlg->m_izquierdo.m_color = !izq;
-      pDlg->m_derecho.m_color = !der;
-      pDlg->m_freno.Invalidate(true);
-      pDlg->m_izquierdo.Invalidate(true);
-      pDlg->m_derecho.Invalidate(true);
+			if (freno) pDlg->m_freno.m_color = 1;
+			else pDlg->m_freno.m_color = 5;
+			pDlg->m_freno.Invalidate(true);
+			if(izq){
+				pDlg->m_flag2 = false;
+				pDlg->SetTimer(2, 500, NULL);
+			}else{
+				pDlg->KillTimer(2);
+				pDlg->m_izquierdo.m_color = 5;
+				pDlg->m_izquierdo.Invalidate(true);
+			}
+      if(der){
+				pDlg->m_flag3 = false;
+				pDlg->SetTimer(3, 500, NULL);
+			}else{
+				pDlg->KillTimer(3);
+				pDlg->m_derecho.m_color = 5;
+				pDlg->m_derecho.Invalidate(true);
+			}
 			pDlg->writeOnLog("Accionamientos OK");
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
@@ -430,7 +443,29 @@ void CCentralitaDlg::OnBnClickedbnstart()
 
 void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	m_flag = true;
+	if(nIDEvent == 1) m_flag = true; //Para desbloquear los threads
+	else if(nIDEvent == 2){
+		if(m_flag2){
+			m_izquierdo.m_color = 2;
+			m_izquierdo.Invalidate(true);
+			m_flag2 = false;
+		}else{
+			m_izquierdo.m_color = 5;
+			m_izquierdo.Invalidate(true);
+			m_flag2 = true;
+		}
+	}
+	else if(nIDEvent == 3){
+		if(m_flag3){
+			m_derecho.m_color = 2;
+			m_derecho.Invalidate(true);
+			m_flag3 = false;
+		}else{
+			m_derecho.m_color = 5;
+			m_derecho.Invalidate(true);
+			m_flag3 = true;
+		}
+	}
 }
 
  void CCentralitaDlg::writeOnLog(CString str){
