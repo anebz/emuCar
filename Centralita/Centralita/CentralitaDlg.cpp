@@ -334,11 +334,11 @@ UINT Acondicionamiento(LPVOID lp){
 			if(izq){
 				if(!pDlg->m_setTimer2){
 					pDlg->m_flag2 = false;
-					pDlg->SetTimer(2, 500, NULL);
+					if (!pDlg->m_setTimer3) pDlg->SetTimer(2, 500, NULL);
 					pDlg->m_setTimer2 = true;
 				}
 			}else{
-				pDlg->KillTimer(2);
+				if(!pDlg->m_setTimer3) pDlg->KillTimer(2);
 				pDlg->m_izquierdo.m_color = 5;
 				pDlg->m_izquierdo.Invalidate(true);
 				pDlg->m_setTimer2 = false;
@@ -346,11 +346,11 @@ UINT Acondicionamiento(LPVOID lp){
       if(der){
 				if(!pDlg->m_setTimer3){
 					pDlg->m_flag3 = false;
-					pDlg->SetTimer(3, 500, NULL);
+					if(!pDlg->m_setTimer2) pDlg->SetTimer(2, 500, NULL);
 					pDlg->m_setTimer3 = true;
 				}
 			}else{
-				pDlg->KillTimer(3);
+				if(!pDlg->m_setTimer2)pDlg->KillTimer(2);
 				pDlg->m_derecho.m_color = 5;
 				pDlg->m_derecho.Invalidate(true);
 				pDlg->m_setTimer3 = false;
@@ -452,28 +452,47 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
     m_flag = true; //Para desbloquear los threads
     break;
   case 2:
-		if(m_flag2){
-			m_izquierdo.m_color = 2;
-			m_izquierdo.Invalidate(true);
-			m_flag2 = false;
-		}else{
-			m_izquierdo.m_color = 5;
-			m_izquierdo.Invalidate(true);
-			m_flag2 = true;
+		if(m_setTimer2 && !m_setTimer3){
+			if(m_flag2){
+				m_izquierdo.m_color = 2;
+				m_izquierdo.Invalidate(true);
+				m_flag2 = false;
+			}else{
+				m_izquierdo.m_color = 5;
+				m_izquierdo.Invalidate(true);
+				m_flag2 = true;
+			}
+		}
+		if(m_setTimer3 && !m_setTimer2){
+			if(m_flag3){
+				m_derecho.m_color = 2;
+				m_derecho.Invalidate(true);
+				m_flag3 = false;
+			}else{
+				m_derecho.m_color = 5;
+				m_derecho.Invalidate(true);
+				m_flag3 = true;
+			}
+		}
+		if(m_setTimer3 && m_setTimer2){
+			if(m_flag3){
+				m_derecho.m_color = 2;
+				m_izquierdo.m_color = 2;
+				m_derecho.Invalidate(true);
+				m_izquierdo.Invalidate(true);
+				m_flag3 = false;
+				m_flag2 = false;
+			}else{
+				m_derecho.m_color = 5;
+				m_izquierdo.m_color = 5;
+				m_derecho.Invalidate(true);
+				m_izquierdo.Invalidate(true);
+				m_flag3 = true;
+				m_flag2 = true;
+			}
 		}
 	  break;
-  case 3:
-		if(m_flag3){
-			m_derecho.m_color = 2;
-			m_derecho.Invalidate(true);
-			m_flag3 = false;
-		}else{
-			m_derecho.m_color = 5;
-			m_derecho.Invalidate(true);
-			m_flag3 = true;
-		}
-	  break;
-  }
+	}
 }
 
  void CCentralitaDlg::writeOnLog(CString str){
