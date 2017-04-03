@@ -259,7 +259,7 @@ UINT Motor(LPVOID lp){
     mtx.lock();
 		misoc.Close();
     mtx.unlock();
-    Sleep(pDlg->m_tiempo / 100);
+    //Sleep(pDlg->m_tiempo / 100);
   }
 	return 0;
 }
@@ -329,7 +329,7 @@ UINT Acondicionamiento(LPVOID lp){
     mtx.lock();
 	  misoc.Close();
 	  mtx.unlock();
-		Sleep(pDlg->m_tiempo / 100);
+		//Sleep(pDlg->m_tiempo / 100);
   }
 	return 0;
 }
@@ -410,7 +410,7 @@ UINT Luces(LPVOID lp){
 		mtx.lock();
 		misoc.Close();
 		mtx.unlock();
-		Sleep(pDlg->m_tiempo / 100);
+		//Sleep(pDlg->m_tiempo / 100);
 	}
 	
 	return 0;
@@ -444,8 +444,11 @@ void CCentralitaDlg::OnBnClickedbnstart()
 
 void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if(nIDEvent == 1) m_flag = true; //Para desbloquear los threads
-	else if(nIDEvent == 2){
+  switch(nIDEvent){
+  case 1:
+    m_flag = true; //Para desbloquear los threads
+    break;
+  case 2:
 		if(m_flag2){
 			m_izquierdo.m_color = 2;
 			m_izquierdo.Invalidate(true);
@@ -455,8 +458,8 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 			m_izquierdo.Invalidate(true);
 			m_flag2 = true;
 		}
-	}
-	else if(nIDEvent == 3){
+	  break;
+  case 3:
 		if(m_flag3){
 			m_derecho.m_color = 2;
 			m_derecho.Invalidate(true);
@@ -466,7 +469,8 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 			m_derecho.Invalidate(true);
 			m_flag3 = true;
 		}
-	}
+	  break;
+  }
 }
 
  void CCentralitaDlg::writeOnLog(CString str){
