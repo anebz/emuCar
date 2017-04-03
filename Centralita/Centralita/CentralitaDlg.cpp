@@ -136,6 +136,8 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_flag = false;
   m_fin = false;
   m_life = true;
+	m_setTimer2 = false;
+	m_setTimer3 = false;
 	m_numMsg = 1;
 
   m_statusMotor.SubclassDlgItem(imStatusMotor, this);
@@ -282,6 +284,16 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
+			pDlg->m_setTimer2 = false;
+			pDlg->m_setTimer3 = false;
+			pDlg->KillTimer(2);
+			pDlg->KillTimer(3);
+			pDlg->m_freno.m_color = 5;
+			pDlg->m_izquierdo.m_color = 5;
+			pDlg->m_derecho.m_color = 5;
+			pDlg->m_freno.Invalidate(true);
+			pDlg->m_izquierdo.Invalidate(true);
+			pDlg->m_derecho.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }
@@ -290,6 +302,16 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
+			pDlg->m_setTimer2 = false;
+			pDlg->m_setTimer3 = false;
+			pDlg->KillTimer(2);
+			pDlg->KillTimer(3);
+			pDlg->m_freno.m_color = 5;
+			pDlg->m_izquierdo.m_color = 5;
+			pDlg->m_derecho.m_color = 5;
+			pDlg->m_freno.Invalidate(true);
+			pDlg->m_izquierdo.Invalidate(true);
+			pDlg->m_derecho.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }	
@@ -307,20 +329,28 @@ UINT Acondicionamiento(LPVOID lp){
 			else pDlg->m_freno.m_color = 5;
 			pDlg->m_freno.Invalidate(true);
 			if(izq){
-				pDlg->m_flag2 = false;
-				pDlg->SetTimer(2, 500, NULL);
+				if(!pDlg->m_setTimer2){
+					pDlg->m_flag2 = false;
+					pDlg->SetTimer(2, 500, NULL);
+					pDlg->m_setTimer2 = true;
+				}
 			}else{
 				pDlg->KillTimer(2);
 				pDlg->m_izquierdo.m_color = 5;
 				pDlg->m_izquierdo.Invalidate(true);
+				pDlg->m_setTimer2 = false;
 			}
       if(der){
-				pDlg->m_flag3 = false;
-				pDlg->SetTimer(3, 500, NULL);
+				if(!pDlg->m_setTimer3){
+					pDlg->m_flag3 = false;
+					pDlg->SetTimer(3, 500, NULL);
+					pDlg->m_setTimer3 = true;
+				}
 			}else{
 				pDlg->KillTimer(3);
 				pDlg->m_derecho.m_color = 5;
 				pDlg->m_derecho.Invalidate(true);
+				pDlg->m_setTimer3 = false;
 			}
 			pDlg->writeOnLog("Accionamientos OK");
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
