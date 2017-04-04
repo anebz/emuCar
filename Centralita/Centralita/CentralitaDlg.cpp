@@ -69,18 +69,18 @@ CCentralitaDlg::CCentralitaDlg(CWnd* pParent /*=NULL*/)
 
 void CCentralitaDlg::DoDataExchange(CDataExchange* pDX)
 {
-  CDialogEx::DoDataExchange(pDX);
-  DDX_Text(pDX, txIPMotor, m_ipMotor);
-  //  DDX_Text(pDX, txPortMotor, m_portMotor);
-  DDX_Text(pDX, txIPAcondicionamiento, m_ipAcondicionamiento);
-  DDX_Text(pDX, txPortMotor, m_portMotor);
-  DDX_Text(pDX, txPortAcondicionamiento, m_portAcondicionamiento);
-  DDX_Text(pDX, txIPLuces, m_ipLuces);
-  DDX_Text(pDX, txPortLuces, m_portLuces);
-  DDX_Text(pDX, txTiempo, m_tiempo);
-  DDX_Control(pDX, lsLog, m_log);
-  DDX_Text(pDX, txTemperatura, m_temperatura);
-  DDX_Text(pDX, txRPM, m_RPM);
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, txIPMotor, m_ipMotor);
+	//  DDX_Text(pDX, txPortMotor, m_portMotor);
+	DDX_Text(pDX, txIPAcondicionamiento, m_ipAcondicionamiento);
+	DDX_Text(pDX, txPortMotor, m_portMotor);
+	DDX_Text(pDX, txPortAcondicionamiento, m_portAcondicionamiento);
+	DDX_Text(pDX, txIPLuces, m_ipLuces);
+	DDX_Text(pDX, txPortLuces, m_portLuces);
+	DDX_Text(pDX, txTiempo, m_tiempo);
+	DDX_Control(pDX, lsLog, m_log);
+	DDX_Text(pDX, txTemperatura, m_temperatura);
+	DDX_Text(pDX, txRPM, m_RPM);
 }
 
 BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
@@ -427,6 +427,10 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
+	static bool isStart = false;
+	GetDlgItem(bnStart)->SetWindowText(isStart ? "Start" : "Stop");
+	isStart = !isStart; 
+
   UpdateData(1);
   if(m_start_stop){
     for(size_t ii = 0; ii < threads.size(); ii++){
