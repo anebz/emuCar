@@ -37,4 +37,5 @@ protected:
 public:
 	int m_port;
 	afx_msg void OnBnClickedStart();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CLucesDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_START, &CLucesDlg::OnBnClickedStart)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -111,7 +112,7 @@ BOOL CLucesDlg::OnInitDialog()
 	luces[2]->SubclassDlgItem(IDC_P2, this);
 	luces[3]->SubclassDlgItem(IDC_P3, this);
 	luces[4]->SubclassDlgItem(IDC_P4, this);
-
+	SetTimer(1, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -172,4 +173,20 @@ void CLucesDlg::OnBnClickedStart()
 	pSock = new CMySock(this);
 	pSock->Create(m_port,SOCK_STREAM); // create socket
 	pSock->Listen();
+}
+
+
+void CLucesDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if(luces[2]->on & !luces[3]->on)luces[1]->on = luces[2]->on = luces[3]->on = luces[4]->on = true;
+	for(auto luz:luces){
+		if(luz->activado && !luz->red){
+			if(luz->on)luz->on = false;
+			else luz->on = true;
+			luz->Invalidate(true);
+		}else if(!luz->red){
+			luz->on = false;
+			luz->Invalidate(true);
+		}
+	}
 }

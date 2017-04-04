@@ -14,6 +14,7 @@ public:
 	bool red;
 	bool flag;
 	bool flag2;
+	bool activado;
 
 protected:
 	DECLARE_MESSAGE_MAP()

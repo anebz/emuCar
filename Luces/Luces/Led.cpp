@@ -16,6 +16,7 @@ CLed::CLed()
 	red = false;
 	flag = false;
 	flag2 = false;
+	activado = false;
 }
 
 CLed::~CLed()
