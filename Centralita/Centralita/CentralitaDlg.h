@@ -8,6 +8,7 @@
 #include "Gauge.h"
 #include <vector>
 #include "ModBus.h"
+#include <string>
 
 // Cuadro de diálogo de CCentralitaDlg
 class CCentralitaDlg : public CDialogEx
@@ -54,7 +55,6 @@ public:
 	afx_msg void OnBnClickedbnstart();
   afx_msg LRESULT OnFinHilo(WPARAM wParam, LPARAM lParam); 
   std::vector<CWinThread*> threads;
-  bool m_start_stop;
   bool m_flag;
   bool m_life;
   bool m_fin;

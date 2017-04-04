@@ -169,10 +169,19 @@ HCURSOR CLucesDlg::OnQueryDragIcon()
 
 void CLucesDlg::OnBnClickedStart()
 {
+	static bool isStart = false;
 	UpdateData(1);
-	pSock = new CMySock(this);
-	pSock->Create(m_port,SOCK_STREAM); // create socket
-	pSock->Listen();
+	if(isStart){
+		GetDlgItem(IDC_START)->SetWindowText("Start");
+		pSock->Close();
+	}
+	else{
+		GetDlgItem(IDC_START)->SetWindowText("Stop");
+		pSock = new CMySock(this);
+		pSock->Create(m_port, SOCK_STREAM);
+		pSock->Listen();
+	}
+	isStart = !isStart; 
 }
 
 

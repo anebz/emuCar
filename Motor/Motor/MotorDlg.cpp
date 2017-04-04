@@ -170,10 +170,19 @@ HCURSOR CMotorDlg::OnQueryDragIcon()
 
 void CMotorDlg::OnBnClickedStart()
 {
+	static bool isStart = false;
 	UpdateData(1);
-	pSock = new CMySocket(this);
-	pSock->Create(m_port, SOCK_STREAM);
-	pSock->Listen();
+	if(isStart){
+		GetDlgItem(IDC_START)->SetWindowText("Start");
+		pSock->Close();
+	}
+	else{
+		GetDlgItem(IDC_START)->SetWindowText("Stop");
+		pSock = new CMySocket(this);
+		pSock->Create(m_port, SOCK_STREAM);
+		pSock->Listen();
+	}
+	isStart = !isStart; 
 }
 
 

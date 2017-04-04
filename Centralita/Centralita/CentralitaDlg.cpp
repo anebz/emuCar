@@ -9,6 +9,9 @@
 #include <ctime>
 #include <mutex>
 
+#include <windows.h>
+#include <mmsystem.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -69,18 +72,18 @@ CCentralitaDlg::CCentralitaDlg(CWnd* pParent /*=NULL*/)
 
 void CCentralitaDlg::DoDataExchange(CDataExchange* pDX)
 {
-  CDialogEx::DoDataExchange(pDX);
-  DDX_Text(pDX, txIPMotor, m_ipMotor);
-  //  DDX_Text(pDX, txPortMotor, m_portMotor);
-  DDX_Text(pDX, txIPAcondicionamiento, m_ipAcondicionamiento);
-  DDX_Text(pDX, txPortMotor, m_portMotor);
-  DDX_Text(pDX, txPortAcondicionamiento, m_portAcondicionamiento);
-  DDX_Text(pDX, txIPLuces, m_ipLuces);
-  DDX_Text(pDX, txPortLuces, m_portLuces);
-  DDX_Text(pDX, txTiempo, m_tiempo);
-  DDX_Control(pDX, lsLog, m_log);
-  DDX_Text(pDX, txTemperatura, m_temperatura);
-  DDX_Text(pDX, txRPM, m_RPM);
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, txIPMotor, m_ipMotor);
+	//  DDX_Text(pDX, txPortMotor, m_portMotor);
+	DDX_Text(pDX, txIPAcondicionamiento, m_ipAcondicionamiento);
+	DDX_Text(pDX, txPortMotor, m_portMotor);
+	DDX_Text(pDX, txPortAcondicionamiento, m_portAcondicionamiento);
+	DDX_Text(pDX, txIPLuces, m_ipLuces);
+	DDX_Text(pDX, txPortLuces, m_portLuces);
+	DDX_Text(pDX, txTiempo, m_tiempo);
+	DDX_Control(pDX, lsLog, m_log);
+	DDX_Text(pDX, txTemperatura, m_temperatura);
+	DDX_Text(pDX, txRPM, m_RPM);
 }
 
 BEGIN_MESSAGE_MAP(CCentralitaDlg, CDialogEx)
@@ -132,7 +135,6 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_temperatura = "Temperatura";
   m_RPM = "RPMs";
   UpdateData(0);
-  m_start_stop = false;
   m_flag = false;
   m_fin = false;
   m_life = true;
@@ -148,6 +150,7 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_freno.SubclassDlgItem(imFreno, this);
   m_imTemperatura.SubclassDlgItem(imTemperatura, this);
   m_imRPM.SubclassDlgItem(imRPM, this);
+
   threads.push_back(AfxBeginThread(Motor,this));
   threads.push_back(AfxBeginThread(Luces,this));
   threads.push_back(AfxBeginThread(Acondicionamiento,this));
@@ -427,21 +430,25 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
-  UpdateData(1);
-  if(m_start_stop){
-    for(size_t ii = 0; ii < threads.size(); ii++){
-      threads.at(ii)->SuspendThread();
-    }
-    m_start_stop = false;
-		KillTimer(1);
-  }
-  else{
-    for(size_t ii = 0; ii < threads.size(); ii++){
-      threads.at(ii)->ResumeThread();
-    }
-    m_start_stop = true;
+	static bool isStart = false;
+	TCHAR s[100];
+	DWORD a = GetCurrentDirectory(100, s);
+
+	if(!isStart){
+		GetDlgItem(bnStart)->SetWindowText("Stop");
+		std::string cs = std::string(s) + "\\ping.wav";
+		PlaySound(cs.c_str(), NULL, SND_ASYNC);
+		for(CWinThread* thread:threads) thread->ResumeThread();
 		SetTimer(1, m_tiempo, NULL);
-  }
+
+	}else{
+		GetDlgItem(bnStart)->SetWindowText("Start");
+		std::string cs = std::string(s) + "\\buzzer.wav";
+		PlaySound(cs.c_str(), NULL, SND_ASYNC);
+		for(CWinThread* thread:threads) thread->SuspendThread();
+		KillTimer(1);
+	}
+	isStart = !isStart;
 }
 
 
