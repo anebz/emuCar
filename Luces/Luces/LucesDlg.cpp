@@ -103,15 +103,15 @@ BOOL CLucesDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	m_port = 504;
 	UpdateData(0);
-	luces = std::vector<CLed*>(5);
+	lights = std::vector<CLed*>(5);
 	for(size_t i = 0; i<5; i++){
-		luces[i] = new CLed();
+		lights[i] = new CLed();
 	}
-	luces[0]->SubclassDlgItem(IDC_P0, this);
-	luces[1]->SubclassDlgItem(IDC_P1, this);
-	luces[2]->SubclassDlgItem(IDC_P2, this);
-	luces[3]->SubclassDlgItem(IDC_P3, this);
-	luces[4]->SubclassDlgItem(IDC_P4, this);
+	lights[0]->SubclassDlgItem(IDC_P0, this);
+	lights[1]->SubclassDlgItem(IDC_P1, this);
+	lights[2]->SubclassDlgItem(IDC_P2, this);
+	lights[3]->SubclassDlgItem(IDC_P3, this);
+	lights[4]->SubclassDlgItem(IDC_P4, this);
 	SetTimer(1, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -187,15 +187,10 @@ void CLucesDlg::OnBnClickedStart()
 
 void CLucesDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if(luces[2]->on & !luces[3]->on)luces[1]->on = luces[2]->on = luces[3]->on = luces[4]->on = true;
-	for(auto luz:luces){
-		if(luz->activado && !luz->red){
-			if(luz->on)luz->on = false;
-			else luz->on = true;
-			luz->Invalidate(true);
-		}else if(!luz->red){
-			luz->on = false;
-			luz->Invalidate(true);
-		}
+	if(lights[2]->on & !lights[3]->on) lights[1]->on = lights[2]->on = lights[3]->on = lights[4]->on = true;
+	for(auto luz:lights){
+		if(luz->activado && !luz->red) luz->on = !luz->on;
+		else if(!luz->red) luz->on = false;
+		luz->Invalidate(true);
 	}
 }

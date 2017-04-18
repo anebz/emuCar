@@ -14,7 +14,7 @@ class CLucesDlg : public CDialogEx
 public:
 	CLucesDlg(CWnd* pParent = NULL);	// standard constructor
 	CMySock* pSock;
-	std::vector<CLed*> luces;
+	std::vector<CLed*> lights;
 
 
 // Dialog Data

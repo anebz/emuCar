@@ -33,7 +33,7 @@ void CMySock::OnAccept(int nErrorCode)
 		if(len == 0 || len == -1) break;
 
 		CModbus mod;
-		bool error = mod.Protocol(pDlg->luces, buf);
+		bool error = mod.Protocol(pDlg->lights, buf);
 
 		if(!error) cliente.Send(buf, 20);
 		else cliente.Send("", 20); // send any message, the other part will interpret as error

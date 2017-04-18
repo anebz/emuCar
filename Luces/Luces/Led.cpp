@@ -38,39 +38,31 @@ END_MESSAGE_MAP()
 
 void CLed::OnPaint()
 {
+	CPaintDC dc(this);
+	CRect r;
+	GetClientRect(r);
+
 	if(flag2){
 		if(on && !red){
-			CPaintDC dc(this);
-			CRect r;
-			GetClientRect(r);
-			if(flag){
-				dc.FillSolidRect(r,RGB(160,160,160)); // gray
-				flag = false;
-			}
-			else{
-				dc.FillSolidRect(r,RGB(255,118,0)); // orange
-				flag = true;
-			}
+			if(flag) dc.FillSolidRect(r,RGB(160,160,160)); // gray
+			else dc.FillSolidRect(r,RGB(255,118,0)); // orange
+			flag = !flag;
 		}
 		flag2 = false;
 		return;
 	}
-	CPaintDC dc(this); // device context for painting
-	CRect r;
-	GetClientRect(r);
-	switch(on){
-		case true: 
-			if(red) dc.FillSolidRect(r,RGB(255,7,0)); // red
-			else{
-				dc.FillSolidRect(r,RGB(255,118,0)); // orange
-				SetTimer(2, 500, NULL);
-				flag = true;
-			}
-			return;
-		case false: 
-			dc.FillSolidRect(r,RGB(160,160,160)); // gray
-			flag = false;
-			KillTimer(2);
+	if(on){
+		if(red) dc.FillSolidRect(r,RGB(255,7,0)); // red
+		else{
+			dc.FillSolidRect(r,RGB(255,118,0)); // orange
+			SetTimer(2, 500, NULL);
+			flag = true;
+		}
+		return;
+	}else{
+		dc.FillSolidRect(r,RGB(160,160,160)); // gray
+		flag = false;
+		KillTimer(2);
 	}
 }
 
