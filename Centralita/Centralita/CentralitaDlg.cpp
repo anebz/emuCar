@@ -361,7 +361,7 @@ UINT Acondicionamiento(LPVOID lp){
 			pDlg->writeOnLog("Accionamientos OK");
 		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
 		pDlg->m_numMsg++;
-    pDlg->PostMessage(WM_FIN_HILO,2); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    pDlg->PostMessage(WM_FIN_HILO,2);
     mtx.lock();
 	  misoc.Close();
 	  mtx.unlock();
@@ -460,43 +460,29 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
     break;
   case 2:
 		if(m_setTimer2 && !m_setTimer3){
-			if(m_flag2){
-				m_izquierdo.m_color = 2;
-				m_izquierdo.Invalidate(true);
-				m_flag2 = false;
-			}else{
-				m_izquierdo.m_color = 5;
-				m_izquierdo.Invalidate(true);
-				m_flag2 = true;
-			}
+			if(m_flag2) m_izquierdo.m_color = 2;
+			else m_izquierdo.m_color = 5;
+			m_izquierdo.Invalidate(true);
+			m_flag2 = !m_flag2;
 		}
 		if(m_setTimer3 && !m_setTimer2){
-			if(m_flag3){
-				m_derecho.m_color = 2;
-				m_derecho.Invalidate(true);
-				m_flag3 = false;
-			}else{
-				m_derecho.m_color = 5;
-				m_derecho.Invalidate(true);
-				m_flag3 = true;
-			}
+			if(m_flag3)m_derecho.m_color = 2;
+			else m_derecho.m_color = 5;
+			m_derecho.Invalidate(true);
+			m_flag3 = !m_flag3;
 		}
 		if(m_setTimer3 && m_setTimer2){
 			if(m_flag3){
 				m_derecho.m_color = 2;
 				m_izquierdo.m_color = 2;
-				m_derecho.Invalidate(true);
-				m_izquierdo.Invalidate(true);
-				m_flag3 = false;
-				m_flag2 = false;
 			}else{
 				m_derecho.m_color = 5;
 				m_izquierdo.m_color = 5;
-				m_derecho.Invalidate(true);
-				m_izquierdo.Invalidate(true);
-				m_flag3 = true;
-				m_flag2 = true;
 			}
+			m_derecho.Invalidate(true);
+			m_izquierdo.Invalidate(true);
+			m_flag3 = !m_flag3;
+			m_flag2 = m_flag3;
 		}
 	  break;
 	}

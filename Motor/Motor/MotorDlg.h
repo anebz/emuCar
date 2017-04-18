@@ -31,11 +31,8 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CString m_temp;
-	CString m_rpm;
-	int m_sl_temp;
-	int m_sl_rpm;
-	int m_port;
+	CString m_temp, m_rpm;
+	int m_sl_temp, m_sl_rpm, m_port;
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnNMReleasedcaptureSl1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMReleasedcaptureSl2(NMHDR *pNMHDR, LRESULT *pResult);
