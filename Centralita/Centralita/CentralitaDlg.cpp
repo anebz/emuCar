@@ -239,7 +239,7 @@ UINT Motor(LPVOID lp){
       pDlg->PostMessage(WM_FIN_HILO,1);
 			continue;
 		}
-		if(!misoc.Connect("127.0.0.1", 502)){
+		if(!misoc.Connect(pDlg->m_ipMotor, pDlg->m_portMotor)){
 			if(!connected) pDlg->writeOnLog("No conecta con puerto 502 (motor)"); 
 			connected = true;
 			firststr = false;
@@ -317,7 +317,7 @@ UINT Acondicionamiento(LPVOID lp){
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }
-	  if(!misoc.Connect("127.0.0.1", 503)){
+		if(!misoc.Connect(pDlg->m_ipAcondicionamiento, pDlg->m_portAcondicionamiento)){
 		  if(!connected) pDlg->writeOnLog("No conecta con puerto 503 (accionamientos)"); 
 			connected = true;
 			firststr = false;
@@ -414,7 +414,7 @@ UINT Luces(LPVOID lp){
       pDlg->PostMessage(WM_FIN_HILO,3);
 			continue;
 		}
-		if(!misoc.Connect("127.0.0.1", 504)){
+		if(!misoc.Connect(pDlg->m_ipLuces, pDlg->m_portLuces)){
 			if(!connected) pDlg->writeOnLog("No conecta con puerto 504 (luces)"); 
 			connected = true;
 			firststr = false;
@@ -466,6 +466,7 @@ LRESULT CCentralitaDlg::OnFinHilo(WPARAM wParam, LPARAM lParam)
 
 void CCentralitaDlg::OnBnClickedbnstart()
 {
+	UpdateData(1);
 	static bool isStart = false;
 	TCHAR s[100];
 	DWORD a = GetCurrentDirectory(100, s);
