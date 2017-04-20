@@ -240,7 +240,7 @@ UINT Motor(LPVOID lp){
 			continue;
 		}
 		if(!misoc.Connect(pDlg->m_ipMotor, pDlg->m_portMotor)){
-			if(!connected) pDlg->writeOnLog("No conecta con puerto 502 (motor)"); 
+			if(!connected) pDlg->writeOnLog("No conecta con el puerto de motor"); 
 			connected = true;
 			firststr = false;
       mtx.unlock();
@@ -257,7 +257,7 @@ UINT Motor(LPVOID lp){
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256 + rec_buf[1] == checker && rec_buf[5] == (3+2*n_data)){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256+rec_buf[1] == buf[0]*256+buf[1] && rec_buf[5] == (3+2*n_data)){
 			int temp = rec_buf[9]*256 + rec_buf[10]; 
       temp /= 3; // regla de tres, para ajustarlo a los valores máximos
       pDlg->m_imTemperatura.m_nivel = temp;
@@ -318,7 +318,7 @@ UINT Acondicionamiento(LPVOID lp){
 		  continue;
 	  }
 		if(!misoc.Connect(pDlg->m_ipAcondicionamiento, pDlg->m_portAcondicionamiento)){
-		  if(!connected) pDlg->writeOnLog("No conecta con puerto 503 (accionamientos)"); 
+		  if(!connected) pDlg->writeOnLog("No conecta con el puerto de accionamientos"); 
 			connected = true;
 			firststr = false;
       mtx.unlock();
@@ -344,7 +344,7 @@ UINT Acondicionamiento(LPVOID lp){
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data) && rec_buf[0]*256 + rec_buf[1] == checker){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data) && rec_buf[0]*256+rec_buf[1] == buf[0]*256+buf[1]){
 			bool freno = rec_buf[10];
 			pDlg->luces[0] = freno;
 			bool izq = rec_buf[12];
@@ -415,7 +415,7 @@ UINT Luces(LPVOID lp){
 			continue;
 		}
 		if(!misoc.Connect(pDlg->m_ipLuces, pDlg->m_portLuces)){
-			if(!connected) pDlg->writeOnLog("No conecta con puerto 504 (luces)"); 
+			if(!connected) pDlg->writeOnLog("No conecta con el puerto de luces"); 
 			connected = true;
 			firststr = false;
       mtx.unlock(); 
