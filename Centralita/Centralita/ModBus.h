@@ -10,7 +10,7 @@ class CModBus : public CWnd
 public:
 	CModBus();
 	virtual ~CModBus();
-  void constructBuffer(unsigned char* buf, int messageID, int slaveID, int functionCode, short dataAddress, short value);
+  void constructBuffer(unsigned char* buf, int messageID, int slaveID, int functionCode, short dataAddress, int value);
 protected:
 	DECLARE_MESSAGE_MAP()
 };

@@ -17,6 +17,8 @@
 #endif
 #define WM_FIN_HILO WM_USER+100
 std::mutex mtx;
+//bool firststr[3] = {false};
+//bool connected[3] = {false};
 
 // Cuadro de diálogo CAboutDlg utilizado para el comando Acerca de
 
@@ -142,6 +144,9 @@ BOOL CCentralitaDlg::OnInitDialog()
 	m_setTimer3 = false;
 	m_numMsg = 1;
 
+	for(size_t i = 0; i<5; i++) luces[i] = false;
+
+
   m_statusMotor.SubclassDlgItem(imStatusMotor, this);
   m_statusAcondicionamiento.SubclassDlgItem(imStatusAcondicionamiento, this);
   m_statusLuces.SubclassDlgItem(imStatusLuces, this);
@@ -212,6 +217,8 @@ HCURSOR CCentralitaDlg::OnQueryDragIcon()
 
 // Controladores de mensaje de CCentralitaDlg
 UINT Motor(LPVOID lp){
+	static bool connected = false;
+	static bool firststr = false;
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
     while(!pDlg->m_flag){}
@@ -233,13 +240,16 @@ UINT Motor(LPVOID lp){
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 502)){
-			pDlg->writeOnLog("No conecta con puerto 502"); 
+			if(!connected) pDlg->writeOnLog("No conecta con puerto 502 (motor)"); 
+			connected = true;
+			firststr = false;
       mtx.unlock();
       pDlg->m_statusMotor.m_color = 1;
       pDlg->m_statusMotor.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,1);
 			continue;
-		}	
+		}
+		else connected = false;
     mtx.unlock();
     pDlg->m_statusMotor.m_color = 0;
     pDlg->m_statusMotor.Invalidate(true);
@@ -255,10 +265,14 @@ UINT Motor(LPVOID lp){
 			int rpm = rec_buf[11]*256 + rec_buf[12];
 			rpm /= 70;
       pDlg->m_imRPM.m_nivel = rpm;
-			pDlg->writeOnLog("Motor OK");
+			if(!firststr) pDlg->writeOnLog("Motor OK");
+			firststr = true;
       pDlg->m_imTemperatura.Invalidate(true);
       pDlg->m_imRPM.Invalidate(true);
-		}else pDlg->writeOnLog("Error en comunicación con el motor. No se han recibido 3 datos");
+		}else if(firststr){
+			pDlg->writeOnLog("Error en comunicación con el motor. No se han recibido 3 datos");
+			firststr = false;
+		}
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
     mtx.lock();
@@ -270,12 +284,15 @@ UINT Motor(LPVOID lp){
 }
 
 UINT Acondicionamiento(LPVOID lp){
+	static bool connected = false;
+	static bool firststr = false;
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
     // ALGORITMO DE CONEXIÓN!!! 
 		unsigned char buf[20];
+		int checker = pDlg->m_numMsg;
     mtx.lock();
 		short n_data = 3;
     pDlg->ModBusObj.constructBuffer(buf, pDlg->m_numMsg, 22, 4, 400, n_data);
@@ -301,7 +318,9 @@ UINT Acondicionamiento(LPVOID lp){
 		  continue;
 	  }
 	  if(!misoc.Connect("127.0.0.1", 503)){
-		  pDlg->writeOnLog("No conecta con puerto 503");
+		  if(!connected) pDlg->writeOnLog("No conecta con puerto 503 (accionamientos)"); 
+			connected = true;
+			firststr = false;
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
@@ -318,13 +337,14 @@ UINT Acondicionamiento(LPVOID lp){
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }	
+		else connected = false;
     mtx.unlock(); 
     pDlg->m_statusAcondicionamiento.m_color = 0;
     pDlg->m_statusAcondicionamiento.Invalidate(true);
 		misoc.Send(buf, 20);
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
-		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data)){
+		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data) && rec_buf[0]*256 + rec_buf[1] == checker){
 			bool freno = rec_buf[10];
 			pDlg->luces[0] = freno;
 			bool izq = rec_buf[12];
@@ -358,8 +378,12 @@ UINT Acondicionamiento(LPVOID lp){
 				pDlg->m_derecho.Invalidate(true);
 				pDlg->m_setTimer3 = false;
 			}
-			pDlg->writeOnLog("Accionamientos OK");
-		}else pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
+			if(!firststr) pDlg->writeOnLog("Accionamientos OK");
+			firststr = true;
+		}else if(firststr){
+			pDlg->writeOnLog("Error en comunicación con los accionamientos. No se han recibido 3 datos");
+			firststr = false;
+		}
 		pDlg->m_numMsg++;
     pDlg->PostMessage(WM_FIN_HILO,2);
     mtx.lock();
@@ -371,6 +395,8 @@ UINT Acondicionamiento(LPVOID lp){
 }
 
 UINT Luces(LPVOID lp){
+	static bool connected = false;
+	static bool firststr = false;
   auto *pDlg = (CCentralitaDlg*) lp;
 	while(pDlg->m_life){
 		pDlg->m_fin = false;
@@ -389,13 +415,16 @@ UINT Luces(LPVOID lp){
 			continue;
 		}
 		if(!misoc.Connect("127.0.0.1", 504)){
-			pDlg->writeOnLog("No conecta con puerto 504"); 
+			if(!connected) pDlg->writeOnLog("No conecta con puerto 504 (luces)"); 
+			connected = true;
+			firststr = false;
       mtx.unlock(); 
       pDlg->m_statusLuces.m_color = 1;
       pDlg->m_statusLuces.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,3);
 			continue;
 		}
+		else connected = false;
     mtx.unlock();
     pDlg->m_statusLuces.m_color = 0;
     pDlg->m_statusLuces.Invalidate(true);
@@ -409,8 +438,15 @@ UINT Luces(LPVOID lp){
 			pDlg->m_numMsg++;
 		}
 
-		if(ok == 5) pDlg->writeOnLog("Luces OK");
-		else pDlg->writeOnLog("Error en comunicación con las luces");
+		if(ok == 5){
+			if(!firststr){
+				pDlg->writeOnLog("Luces OK"); 
+				firststr = true;
+			}
+		}
+		else{
+			pDlg->writeOnLog("Error en comunicación con las luces. No se han recibido 3 datos"); firststr = false;
+		}
 		
 		pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
 		mtx.lock();
