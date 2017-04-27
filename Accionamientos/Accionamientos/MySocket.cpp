@@ -36,7 +36,7 @@ void CMySocket::OnAccept(int nErrorCode)
 	bool error = mod.Protocol(buf, Bus, pDlg->m_button);
 
 	if(!error) cliente.Send(Bus, 20);
-	else cliente.Send("", 20); // send any message, the other part will interpret as error
+	else cliente.Send("", 20); // send empty string, the other part will interpret as error
 
 	cliente.Close();
 	CSocket::OnAccept(nErrorCode);

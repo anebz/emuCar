@@ -38,32 +38,24 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-  CString m_ipMotor;
-//  CString m_portMotor;
-  CString m_ipAcondicionamiento;
-  int m_portMotor;
-  int m_portAcondicionamiento;
-  CString m_ipLuces;
-  int m_portLuces;
+  CString m_ipMotor, m_ipAcondicionamiento, m_ipLuces;
+	CString m_temperatura, m_RPM;
+  int m_portMotor, m_portAcondicionamiento, m_portLuces;
   int m_tiempo;
+	bool m_flag, m_life,m_fin;
+	bool m_flag2, m_flag3;
+	bool m_setTimer2,m_setTimer3;
   CListBox m_log;
   CLed m_statusMotor, m_statusAcondicionamiento, m_statusLuces;
   CLed m_izquierdo, m_derecho, m_freno;
   CGauge m_imTemperatura, m_imRPM;
-  CString m_temperatura;
-  CString m_RPM;
+	CModBus ModBusObj;
+	std::vector<CWinThread*> threads;
+
 	afx_msg void OnBnClickedbnstart();
   afx_msg LRESULT OnFinHilo(WPARAM wParam, LPARAM lParam); 
-  std::vector<CWinThread*> threads;
-  bool m_flag;
-  bool m_life;
-  bool m_fin;
-	bool m_flag2;
-	bool m_flag3;
-	bool m_setTimer2;
-	bool m_setTimer3;
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
+ 	afx_msg void OnTimer(UINT_PTR nIDEvent);
   void writeOnLog(CString str);
-  CModBus ModBusObj;
 	afx_msg void OnBnClickedbnclear();
+	virtual void OnCancel();
 };

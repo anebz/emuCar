@@ -179,6 +179,6 @@ void CAccionamientosDlg::OnBnClickedStart()
 
 void CAccionamientosDlg::OnBnClickedCancel()
 {
-	//pSock->Close();
+	pSock->Close();
 	CDialogEx::OnCancel();
 }

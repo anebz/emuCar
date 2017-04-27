@@ -140,12 +140,10 @@ BOOL CCentralitaDlg::OnInitDialog()
   m_flag = false;
   m_fin = false;
   m_life = true;
-	m_setTimer2 = false;
-	m_setTimer3 = false;
+	m_setTimer2 = m_setTimer3 = false;
 	m_numMsg = 1;
 
 	for(size_t i = 0; i<5; i++) luces[i] = false;
-
 
   m_statusMotor.SubclassDlgItem(imStatusMotor, this);
   m_statusAcondicionamiento.SubclassDlgItem(imStatusAcondicionamiento, this);
@@ -222,7 +220,8 @@ UINT Motor(LPVOID lp){
   auto *pDlg = (CCentralitaDlg*) lp;
   while(pDlg->m_life){
     while(!pDlg->m_flag){}
-    // ALGORITMO DE CONEXIÓN!!! 
+    
+		// connection algorithm
 		unsigned char buf[20];
     mtx.lock();
     int checker = pDlg->m_numMsg;
@@ -258,13 +257,12 @@ UINT Motor(LPVOID lp){
 		int len = misoc.Receive(rec_buf,20); 
 
 		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x04 && rec_buf[0]*256+rec_buf[1] == buf[0]*256+buf[1] && rec_buf[5] == (3+2*n_data)){
+			// data is correct
 			int temp = rec_buf[9]*256 + rec_buf[10]; 
-      temp /= 3; // regla de tres, para ajustarlo a los valores máximos
-      pDlg->m_imTemperatura.m_nivel = temp;
+      pDlg->m_imTemperatura.m_nivel = temp/3;
 
 			int rpm = rec_buf[11]*256 + rec_buf[12];
-			rpm /= 70;
-      pDlg->m_imRPM.m_nivel = rpm;
+      pDlg->m_imRPM.m_nivel = rpm/70;
 			if(!firststr) pDlg->writeOnLog("Motor OK");
 			firststr = true;
       pDlg->m_imTemperatura.Invalidate(true);
@@ -274,11 +272,10 @@ UINT Motor(LPVOID lp){
 			firststr = false;
 		}
 		pDlg->m_numMsg++;
-    pDlg->PostMessage(WM_FIN_HILO,1); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+    pDlg->PostMessage(WM_FIN_HILO,1); 
     mtx.lock();
 		misoc.Close();
     mtx.unlock();
-    //Sleep(pDlg->m_tiempo / 100);
   }
 	return 0;
 }
@@ -290,7 +287,8 @@ UINT Acondicionamiento(LPVOID lp){
   while(pDlg->m_life){
 		pDlg->m_fin = false;
     while(!pDlg->m_flag){}
-    // ALGORITMO DE CONEXIÓN!!! 
+   
+		// connection algorithm
 		unsigned char buf[20];
 		int checker = pDlg->m_numMsg;
     mtx.lock();
@@ -304,16 +302,10 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
-			pDlg->m_setTimer2 = false;
-			pDlg->m_setTimer3 = false;
-			pDlg->KillTimer(2);
-			pDlg->KillTimer(3);
-			pDlg->m_freno.m_color = 5;
-			pDlg->m_izquierdo.m_color = 5;
-			pDlg->m_derecho.m_color = 5;
-			pDlg->m_freno.Invalidate(true);
-			pDlg->m_izquierdo.Invalidate(true);
-			pDlg->m_derecho.Invalidate(true);
+			pDlg->m_setTimer2 = pDlg->m_setTimer3 = false;
+			pDlg->KillTimer(2); pDlg->KillTimer(3);
+			pDlg->m_freno.m_color = pDlg->m_izquierdo.m_color = pDlg->m_derecho.m_color = 5;
+			pDlg->m_freno.Invalidate(true); pDlg->m_izquierdo.Invalidate(true); pDlg->m_derecho.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }
@@ -324,16 +316,10 @@ UINT Acondicionamiento(LPVOID lp){
       mtx.unlock();
       pDlg->m_statusAcondicionamiento.m_color = 1;
       pDlg->m_statusAcondicionamiento.Invalidate(true);
-			pDlg->m_setTimer2 = false;
-			pDlg->m_setTimer3 = false;
-			pDlg->KillTimer(2);
-			pDlg->KillTimer(3);
-			pDlg->m_freno.m_color = 5;
-			pDlg->m_izquierdo.m_color = 5;
-			pDlg->m_derecho.m_color = 5;
-			pDlg->m_freno.Invalidate(true);
-			pDlg->m_izquierdo.Invalidate(true);
-			pDlg->m_derecho.Invalidate(true);
+			pDlg->m_setTimer2 = pDlg->m_setTimer3 = false;
+			pDlg->KillTimer(2); pDlg->KillTimer(3);
+			pDlg->m_freno.m_color = pDlg->m_izquierdo.m_color = pDlg->m_derecho.m_color = 5;
+			pDlg->m_freno.Invalidate(true); pDlg->m_izquierdo.Invalidate(true); pDlg->m_derecho.Invalidate(true);
       pDlg->PostMessage(WM_FIN_HILO,2);
 		  continue;
 	  }	
@@ -345,6 +331,7 @@ UINT Acondicionamiento(LPVOID lp){
 		unsigned char rec_buf[20];
 		int len = misoc.Receive(rec_buf,20); 
 		if(rec_buf[7] == 0x04 && rec_buf[8] == 0x06 && rec_buf[5] == (3+2*n_data) && rec_buf[0]*256+rec_buf[1] == buf[0]*256+buf[1]){
+			// data is correct
 			bool freno = rec_buf[10];
 			pDlg->luces[0] = freno;
 			bool izq = rec_buf[12];
@@ -389,7 +376,6 @@ UINT Acondicionamiento(LPVOID lp){
     mtx.lock();
 	  misoc.Close();
 	  mtx.unlock();
-		//Sleep(pDlg->m_tiempo / 100);
   }
 	return 0;
 }
@@ -401,7 +387,8 @@ UINT Luces(LPVOID lp){
 	while(pDlg->m_life){
 		pDlg->m_fin = false;
 		while(!pDlg->m_flag){}
-		// ALGORITMO DE CONEXIÓN!!! 
+		
+		// connection algorithm
 		unsigned char buf[20];
 		unsigned char rec_buf[20];
     CSocket misoc;
@@ -439,6 +426,7 @@ UINT Luces(LPVOID lp){
 		}
 
 		if(ok == 5){
+			// data is correct
 			if(!firststr){
 				pDlg->writeOnLog("Luces OK"); 
 				firststr = true;
@@ -447,14 +435,11 @@ UINT Luces(LPVOID lp){
 		else{
 			pDlg->writeOnLog("Error en comunicación con las luces. No se han recibido 3 datos"); firststr = false;
 		}
-		
-		pDlg->PostMessage(WM_FIN_HILO,3); // CAMBIAR ESTO DEPENDIENDO DEL PROTOCOLO
+		pDlg->PostMessage(WM_FIN_HILO,3); 
 		mtx.lock();
 		misoc.Close();
 		mtx.unlock();
-		//Sleep(pDlg->m_tiempo / 100);
 	}
-	
 	return 0;
 }
 
@@ -473,6 +458,7 @@ void CCentralitaDlg::OnBnClickedbnstart()
 
 	if(!isStart){
 		GetDlgItem(bnStart)->SetWindowText("Stop");
+		writeOnLog("Polling started"); 
 		std::string cs = std::string(s) + "\\ping.wav";
 		PlaySound(cs.c_str(), NULL, SND_ASYNC);
 		for(CWinThread* thread:threads) thread->ResumeThread();
@@ -480,6 +466,7 @@ void CCentralitaDlg::OnBnClickedbnstart()
 
 	}else{
 		GetDlgItem(bnStart)->SetWindowText("Start");
+		writeOnLog("Polling stopped"); 
 		std::string cs = std::string(s) + "\\buzzer.wav";
 		PlaySound(cs.c_str(), NULL, SND_ASYNC);
 		for(CWinThread* thread:threads) thread->SuspendThread();
@@ -488,14 +475,10 @@ void CCentralitaDlg::OnBnClickedbnstart()
 	isStart = !isStart;
 }
 
-
 void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 {
-  switch(nIDEvent){
-  case 1:
-    m_flag = true; //Para desbloquear los threads
-    break;
-  case 2:
+  if(nIDEvent == 1) m_flag = true; // unblock the threads
+	else{
 		if(m_setTimer2 && !m_setTimer3){
 			if(m_flag2) m_izquierdo.m_color = 2;
 			else m_izquierdo.m_color = 5;
@@ -510,18 +493,14 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 		if(m_setTimer3 && m_setTimer2){
 			if(m_flag3){
-				m_derecho.m_color = 2;
-				m_izquierdo.m_color = 2;
+				m_derecho.m_color = m_izquierdo.m_color = 2;
 			}else{
-				m_derecho.m_color = 5;
-				m_izquierdo.m_color = 5;
+				m_derecho.m_color = m_izquierdo.m_color = 5;
 			}
-			m_derecho.Invalidate(true);
-			m_izquierdo.Invalidate(true);
+			m_derecho.Invalidate(true); m_izquierdo.Invalidate(true);
 			m_flag3 = !m_flag3;
 			m_flag2 = m_flag3;
 		}
-	  break;
 	}
 }
 
@@ -536,4 +515,11 @@ void CCentralitaDlg::OnTimer(UINT_PTR nIDEvent)
  void CCentralitaDlg::OnBnClickedbnclear()
  {
 	 m_log.ResetContent();
+ }
+
+
+ void CCentralitaDlg::OnCancel()
+ {
+	 m_life = false;
+	 CDialogEx::OnCancel();
  }

@@ -36,10 +36,8 @@ void CMySock::OnAccept(int nErrorCode)
 		bool error = mod.Protocol(pDlg->lights, buf);
 
 		if(!error) cliente.Send(buf, 20);
-		else cliente.Send("", 20); // send any message, the other part will interpret as error
+		else cliente.Send("", 20); // send any message (empty string for example), the other part will interpret as error
 	}
-
 	cliente.Close();
-
 	CSocket::OnAccept(nErrorCode);
 }

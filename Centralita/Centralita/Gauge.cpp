@@ -28,10 +28,6 @@ END_MESSAGE_MAP()
 
 
 // Controladores de mensajes de CGauge
-
-
-
-
 void CGauge::OnPaint()
 {
   m_angulo = (-m_nivel) * 180 / 100 - 90;

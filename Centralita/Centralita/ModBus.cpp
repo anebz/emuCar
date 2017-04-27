@@ -45,8 +45,4 @@ void CModBus::constructBuffer(unsigned char* buf, int messageID, int slaveID, in
 	buf[11] = value & 0xFF;
 
 	return;
-
 }
-
-
-

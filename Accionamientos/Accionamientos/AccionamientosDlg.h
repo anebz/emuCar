@@ -12,6 +12,7 @@ class CAccionamientosDlg : public CDialogEx
 public:
 	CAccionamientosDlg(CWnd* pParent = NULL);	// standard constructor
 	CMySocket* pSock;
+	BOOL m_button[3];
 
 // Dialog Data
 	enum { IDD = IDD_ACCIONAMIENTOS_DIALOG };
@@ -24,15 +25,14 @@ public:
 protected:
 	HICON m_hIcon;
 
+public:
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-public:
 	int m_port;
 	afx_msg void OnBnClickedStart();
-	BOOL m_button[3];
 	afx_msg void OnBnClickedCancel();
 };
